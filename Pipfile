@@ -4,16 +4,20 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pylint = "*"
 
 [packages]
 numpy = "*"
-pydicom = "*"
+pandas = "*"
 matplotlib = "*"
 torch = "*"
 torchvision = "*"
-pandas = "*"
+pillow = "*"
 scikit-learn = "*"
 tqdm = "*"
+tensorboard = "*"
+pydicom = "*"
+torchsummary = "*"
 
 [requires]
 python_version = "3.7"
