@@ -18,6 +18,7 @@ tqdm = "*"
 tensorboard = "*"
 pydicom = "*"
 torchsummary = "*"
+jupyter = "*"
 
 [requires]
 python_version = "3.7"

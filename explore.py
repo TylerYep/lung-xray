@@ -1,8 +1,10 @@
-from src.dataset import LungDataset
+from src.dataset import LungDataset, DATA_PATH
+import matplotlib.pyplot as plt
 
 def explore():
     dataset = LungDataset(f"{DATA_PATH}/train-rle.csv")
     print(dataset[1])
+    plot_pixel_array(dataset[1][0])
 
 
 def show_dcm_info(dataset):
@@ -28,9 +30,10 @@ def show_dcm_info(dataset):
             print("Pixel spacing....:", dataset.PixelSpacing)
 
 
-def plot_pixel_array(dataset, figsize=(10,10)):
+def plot_pixel_array(arr, figsize=(10,10)):
+    """arr should be a numpy array"""
     plt.figure(figsize=figsize)
-    plt.imshow(dataset.pixel_array, cmap=plt.cm.bone)
+    plt.imshow(arr, cmap=plt.cm.bone)
     plt.show()
 
 
