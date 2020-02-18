@@ -1,7 +1,13 @@
+from src.dataset import LungDataset
+
+def explore():
+    dataset = LungDataset(f"{DATA_PATH}/train-rle.csv")
+    print(dataset[1])
+
+
 def show_dcm_info(dataset):
     print("Filename.........:", file_path)
     print("Storage type.....:", dataset.SOPClassUID)
-    print()
 
     pat_name = dataset.PatientName
     display_name = pat_name.family_name + ", " + pat_name.given_name
@@ -21,7 +27,12 @@ def show_dcm_info(dataset):
         if 'PixelSpacing' in dataset:
             print("Pixel spacing....:", dataset.PixelSpacing)
 
+
 def plot_pixel_array(dataset, figsize=(10,10)):
     plt.figure(figsize=figsize)
     plt.imshow(dataset.pixel_array, cmap=plt.cm.bone)
     plt.show()
+
+
+if __name__ == '__main__':
+    explore()

@@ -1,4 +1,5 @@
 import sys
+import glob
 import pandas as pd
 import torch
 import pydicom
@@ -7,10 +8,9 @@ from torch.utils.data.dataset import Dataset
 from torchvision import datasets, transforms
 from src.metric_tracker import Mode
 if 'google.colab' in sys.modules:
-    DATA_PATH = '/content/'
+    DATA_PATH = '/content'
 else:
-    DATA_PATH = 'data/'
-
+    DATA_PATH = 'data'
 
 INPUT_SHAPE = (1, 28, 28)
 
@@ -42,8 +42,9 @@ def load_test_data(args):
 
 class LungDataset(Dataset):
     ''' Dataset for training a model on a dataset. '''
-    def __init__(self, data_path, mode):
+    def __init__(self, data_path, mode=Mode.TRAIN):
         super().__init__()
+        self.mode = mode
         if mode == Mode.TRAIN:
             train_files = sorted(glob.glob(f'{DATA_PATH}/train_images/*.dcm'))[:100]
             self.data = pd.read_csv(data_path, index_col='ImageId')
@@ -55,10 +56,12 @@ class LungDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, index):
-        image = pydicom.read_file(self.data[index]).pixel_array
-
-        if mode == Mode.TRAIN:
-            masks = None # TODO
+        if self.mode == Mode.TRAIN:
+            filename = f'{DATA_PATH}/train_images/{self.data.index[index]}.dcm'
+            image = pydicom.read_file(filename).pixel_array
+            masks = self.data['EncodedPixels'][index]
             return image, masks
 
+        filename = f'{DATA_PATH}/test_images/{self.data[index]}.dcm'
+        image = pydicom.read_file(filename).pixel_array
         return image
