@@ -5,6 +5,7 @@ def explore():
     dataset = LungDataset(f"{DATA_PATH}/train-rle.csv")
     print(dataset[1])
     plot_pixel_array(dataset[1][0])
+    plot_pixel_array(dataset[1][1])
 
 
 def show_dcm_info(dataset):

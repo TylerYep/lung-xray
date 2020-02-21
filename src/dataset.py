@@ -1,8 +1,9 @@
 import sys
 import glob
+import pydicom
+import numpy as np
 import pandas as pd
 import torch
-import pydicom
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
 from torchvision import datasets, transforms
@@ -40,6 +41,38 @@ def load_test_data(args):
     #                            transforms.Normalize((0.1307,), (0.3081,))])
 
 
+def run_length_decode(rle, height=1024, width=1024, fill_value=1):
+    ''' https://www.kaggle.com/rishabhiitbhu/unet-with-resnet34-encoder-pytorch '''
+    component = np.zeros((height, width), np.float32)
+    component = component.reshape(-1)
+    rle = np.array([int(s) for s in rle.strip().split(' ')])
+    print(rle.shape, rle)
+    rle = rle.reshape(-1, 2)
+    start = 0
+    for index, length in rle:
+        start = start+index
+        end = start+length
+        component[start: end] = fill_value
+        start = end
+    component = component.reshape(width, height).T
+    return component
+
+
+def run_length_encode(component):
+    component = component.T.flatten()
+    start = np.where(component[1:] > component[:-1])[0]+1
+    end = np.where(component[:-1] > component[1:])[0]+1
+    length = end-start
+    rle = []
+    for i in range(len(length)):
+        if i == 0:
+            rle.extend([start[0], length[0]])
+        else:
+            rle.extend([start[i]-end[i-1], length[i]])
+    rle = ' '.join([str(r) for r in rle])
+    return rle
+
+
 class LungDataset(Dataset):
     ''' Dataset for training a model on a dataset. '''
     def __init__(self, data_path, mode=Mode.TRAIN):
@@ -59,8 +92,13 @@ class LungDataset(Dataset):
         if self.mode == Mode.TRAIN:
             filename = f'{DATA_PATH}/train_images/{self.data.index[index]}.dcm'
             image = pydicom.read_file(filename).pixel_array
-            masks = self.data['EncodedPixels'][index]
-            return image, masks
+            annotations = self.data['EncodedPixels'][index].split()
+            final_mask = np.zeros([1024, 1024])
+            if annotations[0] != -1:
+                for rle in annotations:
+                    final_mask += run_length_decode(rle)
+            final_mask = (final_mask >= 1).astype('float32') # for overlap cases
+            return image, final_mask
 
         filename = f'{DATA_PATH}/test_images/{self.data[index]}.dcm'
         image = pydicom.read_file(filename).pixel_array
