@@ -15,13 +15,12 @@ else:
     from tqdm import tqdm
 
 
-def test_model(test_loader, model, device, criterion):
+def test_model(test_loader, model, criterion):
     model.eval()
     test_loss, correct = 0, 0
     with torch.no_grad():
         with tqdm(desc='Test', total=len(test_loader), ncols=120) as pbar:
             for data, target in test_loader:
-                data, target = data.to(device), target.to(device)
                 output = model(data)
                 test_loss += criterion(output, target).item()
                 pred = output.argmax(dim=1, keepdim=True)
@@ -38,13 +37,13 @@ def test_model(test_loader, model, device, criterion):
 def main():
     args, device, checkpoint = init_pipeline()
     criterion = F.nll_loss
-    test_loader = load_test_data(args)
+    test_loader = load_test_data(args, device)
     init_params = checkpoint.get('model_init', {})
     model = Model(*init_params).to(device)
     util.load_state_dict(checkpoint, model)
     torchsummary.summary(model, INPUT_SHAPE)
 
-    test_model(test_loader, model, device, criterion)
+    test_model(test_loader, model, criterion)
 
 
 if __name__ == '__main__':

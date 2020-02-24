@@ -41,7 +41,8 @@ def plot_pixel_array(arr, figsize=(10, 10)):
 def plot_with_mask(im, mask, figsize=(10, 10)):
     plt.figure(figsize=figsize)
     plt.imshow(im + mask, cmap=plt.cm.bone)
-    if mask.sum() == 0: plt.title('no mask')
+    if mask.sum() == 0:
+        plt.title('no mask')
     plt.show()
 
 
