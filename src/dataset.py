@@ -4,6 +4,7 @@ import csv
 import pydicom
 import numpy as np
 from torch.utils.data import DataLoader
+from torch.utils.data.dataloader import default_collate
 from torch.utils.data.dataset import Dataset
 from torchvision import datasets, transforms
 if 'google.colab' in sys.modules:
@@ -79,7 +80,7 @@ def row_to_data(id_, rle):
     filename = f'{DATA_PATH}/train_images/{id_}.dcm'
     img = pydicom.read_file(filename).pixel_array / 255
     mask = rle2mask(rle)
-    return img, mask
+    return img[None, :, :], mask
 
 
 def read_csv(filename, has_masks=True):

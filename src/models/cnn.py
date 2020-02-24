@@ -6,18 +6,21 @@ class BasicCNN(nn.Module):
     """ Neural network """
     def __init__(self):
         super().__init__()
-        self.conv1 = nn.Conv2d(1, 32, 3, 1)
-        self.conv2 = nn.Conv2d(32, 64, 3, 1)
-        self.dropout1 = nn.Dropout2d(0.25)
-        self.dropout2 = nn.Dropout2d(0.5)
+        #torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True, padding_mode='zeros')
+        self.conv1 = nn.Conv2d(1, 32, 3, 1, padding=1)
+        self.conv2 = nn.Conv2d(32, 64, 3, 1, padding=1)
+        self.conv3 = nn.Conv2d(64, 1, 3, 1, padding=1)
+        # self.dropout1 = nn.Dropout2d(0.25)
+        # self.dropout2 = nn.Dropout2d(0.5)
 
     def forward(self, x):
         """ Forward pass for your feedback prediction network. """
         out = self.conv1(x)
         out = F.relu(out)
         out = self.conv2(out)
-        out = F.max_pool2d(out, 2)
-        out = self.dropout1(out)
+        out = F.relu(out)
+        out = self.conv3(out)
+        out = torch.sigmoid(out)
 
         return out
 

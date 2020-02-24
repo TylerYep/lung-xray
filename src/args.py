@@ -11,7 +11,7 @@ def init_pipeline(arg_list=None):
 
     parser = argparse.ArgumentParser(description='PyTorch ML Pipeline')
 
-    parser.add_argument('--batch-size', type=int, default=100, metavar='N',
+    parser.add_argument('--batch-size', type=int, default=10, metavar='N',
                         help='input batch size for training (default: 100)')
 
     parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N',
