@@ -22,7 +22,7 @@ def get_collate_fn(device):
 
 def load_train_data(args, device):
     collate_fn = get_collate_fn(device)
-    train_set = LungDataset('train')
+    train_set = LungDataset('train', n=100, mask_only=True)
     val_set = LungDataset('val')
     train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True, collate_fn=collate_fn)
     val_loader = DataLoader(val_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
@@ -53,7 +53,7 @@ def rle2mask(rle, height=1024, width=1024, fill_value=1):
         component[start: end] = fill_value
         start = end
     component = component.reshape(width, height).T
-    return (component >= 1).astype('float32')
+    return (component >= 1).astype(np.float32)
 
 
 # TODO haven't tested
@@ -80,7 +80,7 @@ def row_to_data(id_, rle):
     filename = f'{DATA_PATH}/train_images/{id_}.dcm'
     img = pydicom.read_file(filename).pixel_array / 255
     mask = rle2mask(rle)
-    return img[None, :, :], mask
+    return img[None, :, :].astype("float32"), mask
 
 
 def read_csv(filename, has_masks=True):
@@ -97,7 +97,7 @@ class LungDataset(Dataset):
         super().__init__()
         self.lazy = lazy
         self.mode = mode
-        if mode == 'train':
+        if mode == 'train' or mode == 'val':
             self.data = read_csv(f'{DATA_PATH}/train-rle.csv')
             if n is not None:
                 self.data = self.data[:n]
@@ -115,10 +115,12 @@ class LungDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, index):
-        if self.mode == 'train':
+        if self.mode in ('train', 'val'):
             if not self.lazy:
                 return self.xy[index]
             return row_to_data(*self.data[index])
+        else:
+            raise NotImplementedError
 
 
 if __name__ == '__main__':

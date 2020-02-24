@@ -4,6 +4,7 @@ import numpy as np
 import torch
 
 from src import util
+BS = 4
 
 def init_pipeline(arg_list=None):
     set_random_seeds()
@@ -11,10 +12,10 @@ def init_pipeline(arg_list=None):
 
     parser = argparse.ArgumentParser(description='PyTorch ML Pipeline')
 
-    parser.add_argument('--batch-size', type=int, default=10, metavar='N',
+    parser.add_argument('--batch-size', type=int, default=BS, metavar='N',
                         help='input batch size for training (default: 100)')
 
-    parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N',
+    parser.add_argument('--test-batch-size', type=int, default=BS, metavar='N',
                         help='input batch size for testing (default: 1000)')
 
     parser.add_argument('--epochs', type=int, default=100, metavar='N',
@@ -35,7 +36,7 @@ def init_pipeline(arg_list=None):
     parser.add_argument('--name', type=str, default='',
                         help='folder to save files to checkpoint/')
 
-    parser.add_argument('--visualize', action='store_true', default=True,
+    parser.add_argument('--visualize', action='store_true', default=False,
                         help='save visualization files')
 
     args = parser.parse_args(arg_list)

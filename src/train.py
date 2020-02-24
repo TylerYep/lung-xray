@@ -21,7 +21,7 @@ else:
 
 
 # Adding metrics here will automatically search the metrics/ folder for an implementation.
-METRIC_NAMES = ['Loss', 'Accuracy']
+METRIC_NAMES = ['Loss', 'Accuracy', 'IoU']
 
 
 def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
@@ -59,7 +59,7 @@ def init_metrics(args, checkpoint):
 
 
 def load_model(args, device, checkpoint, init_params, train_loader):
-    criterion = F.nll_loss
+    criterion = nn.BCELoss()
     model = Model(*init_params).to(device)
     optimizer = optim.AdamW(model.parameters(), lr=args.lr)
     verify_model(model, train_loader, optimizer, criterion)

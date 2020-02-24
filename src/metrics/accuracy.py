@@ -15,7 +15,8 @@ class Accuracy(Metric):
 
     def update(self, val_dict):
         output, target = val_dict['output'], val_dict['target']
-        accuracy = (output.argmax(1) == target).float().mean().item()
+        output = output > 0.5
+        accuracy = (output == target).float().mean().item()
         self.epoch_acc += accuracy
         self.running_acc += accuracy
         return accuracy

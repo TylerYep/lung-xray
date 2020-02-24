@@ -15,12 +15,14 @@ class BasicCNN(nn.Module):
 
     def forward(self, x):
         """ Forward pass for your feedback prediction network. """
+        # print(x.shape, x.dtype)
         out = self.conv1(x)
         out = F.relu(out)
         out = self.conv2(out)
         out = F.relu(out)
         out = self.conv3(out)
         out = torch.sigmoid(out)
+        out = out.squeeze(dim=1)
 
         return out
 
