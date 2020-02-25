@@ -21,7 +21,7 @@ else:
 
 
 # Adding metrics here will automatically search the metrics/ folder for an implementation.
-METRIC_NAMES = ['Loss', 'Accuracy', 'IoU']
+METRIC_NAMES = ['Loss', 'IoU']
 
 
 def train_and_validate(model, loader, optimizer, criterion, metrics, mode):

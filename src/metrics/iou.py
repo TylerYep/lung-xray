@@ -9,9 +9,6 @@ class IoU(Metric):
         self.epoch_acc = 0.0
         self.running_acc = 0.0
 
-    def formatted(self, computed_val):
-        return f'{self.name}: {100. * computed_val:.2f}%'
-
     def reset(self):
         self.running_acc = 0.0
 

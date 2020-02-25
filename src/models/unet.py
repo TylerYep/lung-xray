@@ -12,7 +12,6 @@ class UNet(nn.Module):
     def forward(self, x):
         """ Forward pass for your feedback prediction network. """
         out = self.unet(x)
-        print(out)
         return out
 
     def forward_with_activations(self, x):
