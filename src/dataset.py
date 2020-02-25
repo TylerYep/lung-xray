@@ -20,24 +20,42 @@ def get_collate_fn(device):
     return lambda x: map(lambda b: b.to(device), default_collate(x))
 
 
+def get_transforms():
+    return transforms.Compose([
+        transforms.ToTensor(),
+        transforms.ToPILImage(),
+        # transforms.Resize(INPUT_SHAPE[1:]),
+        # transforms.Grayscale(num_output_channels=1),
+        transforms.ToTensor(),
+        # transforms.Normalize((0.1307,), (0.3081,))
+    ])
+
+
 def load_train_data(args, device):
+    transform = get_transforms()
     collate_fn = get_collate_fn(device)
-    train_set = LungDataset('train', n=100, mask_only=True)
-    val_set = LungDataset('val')
-    train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True, collate_fn=collate_fn)
-    val_loader = DataLoader(val_set, batch_size=args.batch_size, collate_fn=collate_fn)
+    train_set = LungDataset('train', n=100, mask_only=True, transform=transform)
+    val_set = LungDataset('val', n=100, transform=transform)
+    train_loader = DataLoader(train_set,
+                              batch_size=args.batch_size,
+                              shuffle=True,
+                              collate_fn=collate_fn)
+    val_loader = DataLoader(val_set,
+                            batch_size=args.batch_size,
+                            collate_fn=collate_fn)
     return train_loader, val_loader, {}
 
 
 def load_test_data(args, device):
+    transform = get_transforms()
     collate_fn = get_collate_fn(device)
-    test_set = LungDataset('test')
+    test_set = LungDataset('test', transform=transforms)
     test_loader = DataLoader(test_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
     return test_loader
 
 
 # This function works
-def rle2mask(rle, height=1024, width=1024, fill_value=1):
+def rle2mask(rle, height=INPUT_SHAPE[1], width=INPUT_SHAPE[2], fill_value=1):
     ''' https://www.kaggle.com/rishabhiitbhu/unet-with-resnet34-encoder-pytorch '''
     component = np.zeros((height, width), np.float32)
     rle = np.array([int(s) for s in rle.strip().split(' ')])
@@ -93,10 +111,11 @@ def read_csv(filename, has_masks=True):
 
 class LungDataset(Dataset):
     ''' Dataset for training a model on a dataset. '''
-    def __init__(self, mode, n=None, lazy=True, mask_only=False):
+    def __init__(self, mode, n=None, lazy=True, mask_only=False, transform=None):
         super().__init__()
         self.lazy = lazy
         self.mode = mode
+        self.transform = transform
         if mode == 'train' or mode == 'val':
             self.data = read_csv(f'{DATA_PATH}/train-rle.csv')
             if n is not None:
@@ -104,7 +123,7 @@ class LungDataset(Dataset):
             if mask_only:
                 self.data = [(id_, rle) for (id_, rle) in self.data if rle != "-1"]
             if not self.lazy:
-                self.xy = [row_to_data(id_, rle) for id_, rle in self.data]
+                self.data = [row_to_data(id_, rle) for id_, rle in self.data]
 
         elif mode == 'test':
             self.data = sorted(glob.glob(f'{DATA_PATH}/test_images/*.dcm'))
@@ -116,9 +135,15 @@ class LungDataset(Dataset):
 
     def __getitem__(self, index):
         if self.mode in ('train', 'val'):
-            if not self.lazy:
-                return self.xy[index]
-            return row_to_data(*self.data[index])
+            if self.lazy:
+                img, mask = row_to_data(*self.data[index])
+            else:
+                img, mask = self.data[index]
+
+            if self.transform:
+                img = self.transform(img)
+
+            return img, mask
         else:
             raise NotImplementedError
 
