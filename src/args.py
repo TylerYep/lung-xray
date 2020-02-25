@@ -1,4 +1,3 @@
-BATCH_SIZE = 4
 import argparse
 import random
 import numpy as np
@@ -12,10 +11,10 @@ def init_pipeline(arg_list=None):
 
     parser = argparse.ArgumentParser(description='PyTorch ML Pipeline')
 
-    parser.add_argument('--batch-size', type=int, default=BATCH_SIZE, metavar='N',
+    parser.add_argument('--batch-size', type=int, default=8, metavar='N',
                         help='input batch size for training (default: 100)')
 
-    parser.add_argument('--test-batch-size', type=int, default=BATCH_SIZE, metavar='N',
+    parser.add_argument('--test-batch-size', type=int, default=10, metavar='N',
                         help='input batch size for testing (default: 1000)')
 
     parser.add_argument('--epochs', type=int, default=100, metavar='N',
@@ -36,7 +35,7 @@ def init_pipeline(arg_list=None):
     parser.add_argument('--name', type=str, default='',
                         help='folder to save files to checkpoint/')
 
-    parser.add_argument('--visualize', action='store_true', default=False,
+    parser.add_argument('--visualize', action='store_true', default=True,
                         help='save visualization files')
 
     args = parser.parse_args(arg_list)

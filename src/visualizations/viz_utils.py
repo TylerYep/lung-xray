@@ -31,7 +31,11 @@ def rearrange(orig_img):
 
     if len(img.shape) == 4 and img.shape[0] == 1:
         img = img.squeeze(0)
+    elif len(img.shape) == 2:
+        img = img.unsqueeze(0)
+
     assert len(img.shape) == 3
+
     if img.shape[0] == 1:
         return torch.cat([img] * 3).permute((1, 2, 0))
     if img.shape[0] == 3:

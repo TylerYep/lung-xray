@@ -25,7 +25,7 @@ def load_train_data(args, device):
     train_set = LungDataset('train', n=100, mask_only=True)
     val_set = LungDataset('val')
     train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True, collate_fn=collate_fn)
-    val_loader = DataLoader(val_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
+    val_loader = DataLoader(val_set, batch_size=args.batch_size, collate_fn=collate_fn)
     return train_loader, val_loader, {}
 
 
