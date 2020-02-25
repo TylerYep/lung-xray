@@ -36,7 +36,7 @@ def test_model(test_loader, model, criterion):
 
 def main():
     args, device, checkpoint = init_pipeline()
-    criterion = F.nll_loss
+    criterion = nn.BCELoss()
     test_loader = load_test_data(args, device)
     init_params = checkpoint.get('model_init', {})
     model = Model(*init_params).to(device)

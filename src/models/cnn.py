@@ -15,7 +15,6 @@ class BasicCNN(nn.Module):
 
     def forward(self, x):
         """ Forward pass for your feedback prediction network. """
-        # print(x.shape, x.dtype)
         out = self.conv1(x)
         out = F.relu(out)
         out = self.conv2(out)
