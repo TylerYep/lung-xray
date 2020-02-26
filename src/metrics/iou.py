@@ -13,7 +13,6 @@ class IoU(Metric):
 
     def update(self, val_dict):
         output, target = val_dict['output'], val_dict['target']
-
         output = output > 0.5
         output, target = output.squeeze(), target.squeeze()
         intersection = (output & (target).bool()).float().sum((1, 2)) + SMOOTH

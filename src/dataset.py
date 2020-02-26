@@ -39,8 +39,8 @@ MASK_TRANSFORM = transforms.Compose([
 
 def load_train_data(args, device):
     collate_fn = get_collate_fn(device)
-    train_set = LungDataset('train', n=100)
-    val_set = LungDataset('val', n=100)
+    train_set = LungDataset('train', n=1000)
+    val_set = LungDataset('val', n=1000)
     train_loader = DataLoader(train_set,
                               batch_size=args.batch_size,
                               shuffle=True,

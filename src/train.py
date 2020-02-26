@@ -12,7 +12,6 @@ from src.args import init_pipeline
 from src.dataset import load_train_data
 from src.metric_tracker import MetricTracker, Mode
 from src.models import UNet as Model
-# from src.models import BasicCNN as Model
 from src.verify import verify_model
 from src.viz import visualize, visualize_trained
 
@@ -44,12 +43,10 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode, plot=
 
             output = model(data)
             if mode == Mode.TRAIN and plot:
-                plt.imshow(data.detach().numpy().squeeze()[0])
-                plt.show()
-                plt.imshow(output.detach().numpy().squeeze()[0] > 0.4)
-                print(np.unique(output.detach().numpy().squeeze()[0]))
-                plt.show()
-                plt.imshow(target.detach().numpy().squeeze()[0])
+                _, axs = plt.subplots(3)
+                axs[0].imshow(data.detach().numpy().squeeze()[0])
+                axs[1].imshow(output.detach().numpy().squeeze()[0] > 0.3)
+                axs[2].imshow(target.detach().numpy().squeeze()[0])
                 plt.show()
 
             loss = criterion(output, target)
@@ -75,7 +72,7 @@ def load_model(args, device, checkpoint, init_params, train_loader):
     criterion = nn.BCELoss()
     model = Model(*init_params).to(device)
     optimizer = optim.AdamW(model.parameters(), lr=args.lr)
-    # verify_model(model, train_loader, optimizer, criterion)
+    verify_model(model, train_loader, optimizer, criterion)
     util.load_state_dict(checkpoint, model, optimizer)
     return model, criterion, optimizer
 
@@ -85,8 +82,9 @@ def train(arg_list=None):
     train_loader, val_loader, init_params = load_train_data(args, device)
     model, criterion, optimizer = load_model(args, device, checkpoint, init_params, train_loader)
     run_name, metrics = init_metrics(args, checkpoint)
-    if args.visualize:
-        metrics.add_network(model, train_loader)
+    # if args.visualize:
+    #     metrics.add_network(model, train_loader)
+    #     visualize(model, train_loader, run_name)
 
     util.set_rng_state(checkpoint)
     start_epoch = metrics.epoch + 1
