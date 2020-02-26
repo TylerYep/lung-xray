@@ -2,7 +2,6 @@ from .metric import Metric
 
 SMOOTH = 1e-6
 
-
 class IoU(Metric):
     def __init__(self):
         super().__init__()
@@ -14,7 +13,9 @@ class IoU(Metric):
 
     def update(self, val_dict):
         output, target = val_dict['output'], val_dict['target']
+
         output = output > 0.5
+        output, target = output.squeeze(), target.squeeze()
         intersection = (output & (target).bool()).float().sum((1, 2)) + SMOOTH
         union = (output | target.bool()).float().sum((1, 2)) + SMOOTH
         accuracy = (intersection / union).sum().item()

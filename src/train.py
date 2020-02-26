@@ -15,6 +15,8 @@ from src.models import BasicCNN as Model
 from src.verify import verify_model
 from src.viz import visualize, visualize_trained
 
+import matplotlib.pyplot as plt
+
 if 'google.colab' in sys.modules:
     from tqdm import tqdm_notebook as tqdm
 else:
@@ -40,6 +42,14 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
                 optimizer.zero_grad()
 
             output = model(data)
+            plt.imshow(data.detach().numpy().squeeze()[0])
+            plt.show()
+            plt.imshow(output.detach().numpy().squeeze()[0] > 0.4)
+            print(np.unique(output.detach().numpy().squeeze()[0]))
+            plt.show()
+            plt.imshow(target.detach().numpy().squeeze()[0])
+            plt.show()
+
             loss = criterion(output, target)
             if mode == Mode.TRAIN:
                 loss.backward()
@@ -63,7 +73,7 @@ def load_model(args, device, checkpoint, init_params, train_loader):
     criterion = nn.BCELoss()
     model = Model(*init_params).to(device)
     optimizer = optim.AdamW(model.parameters(), lr=args.lr)
-    verify_model(model, train_loader, optimizer, criterion)
+    # verify_model(model, train_loader, optimizer, criterion)
     util.load_state_dict(checkpoint, model, optimizer)
     return model, criterion, optimizer
 
@@ -75,7 +85,7 @@ def train(arg_list=None):
     run_name, metrics = init_metrics(args, checkpoint)
     if args.visualize:
         metrics.add_network(model, train_loader)
-        visualize(model, train_loader, run_name)
+        # visualize(model, train_loader, run_name)
 
     util.set_rng_state(checkpoint)
     start_epoch = metrics.epoch + 1

@@ -39,7 +39,7 @@ MASK_TRANSFORM = transforms.Compose([
 
 def load_train_data(args, device):
     collate_fn = get_collate_fn(device)
-    train_set = LungDataset('train', n=100, mask_only=True)
+    train_set = LungDataset('train', n=4, mask_only=True)
     val_set = LungDataset('val', n=100)
     train_loader = DataLoader(train_set,
                               batch_size=args.batch_size,
@@ -60,7 +60,7 @@ def load_test_data(args, device):
 
 
 # This function works
-def rle2mask(rle, height=INPUT_SHAPE[1], width=INPUT_SHAPE[2], fill_value=1):
+def rle2mask(rle, height=1024, width=1024, fill_value=1):
     ''' https://www.kaggle.com/rishabhiitbhu/unet-with-resnet34-encoder-pytorch '''
     component = np.zeros((height, width), np.float32)
     rle = np.array([int(s) for s in rle.strip().split(' ')])
