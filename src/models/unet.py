@@ -7,7 +7,7 @@ class UNet(nn.Module):
     """ Neural network """
     def __init__(self):
         super().__init__()
-        self.unet = smp.Unet("resnet18", encoder_weights="imagenet", activation=None)
+        self.unet = smp.Unet("resnet18", encoder_weights='imagenet', activation='sigmoid')
 
     def forward(self, x):
         """ Forward pass for your feedback prediction network. """

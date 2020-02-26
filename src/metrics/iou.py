@@ -15,7 +15,9 @@ class IoU(Metric):
     def update(self, val_dict):
         output, target = val_dict['output'], val_dict['target']
         output = output > 0.5
-        accuracy = (((output & (target).bool()).float().sum((1, 2)) + SMOOTH)/((output | target.bool()).float().sum((1, 2)) + SMOOTH)).sum().item()
+        intersection = (output & (target).bool()).float().sum((1, 2)) + SMOOTH
+        union = (output | target.bool()).float().sum((1, 2)) + SMOOTH
+        accuracy = (intersection / union).sum().item()
         self.epoch_acc += accuracy
         self.running_acc += accuracy
         return accuracy
