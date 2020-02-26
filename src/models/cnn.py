@@ -21,7 +21,6 @@ class BasicCNN(nn.Module):
         out = F.relu(out)
         out = self.conv3(out)
         out = torch.sigmoid(out)
-        out = out.squeeze(dim=1)
         return out
 
     def forward_with_activations(self, x):
@@ -35,5 +34,4 @@ class BasicCNN(nn.Module):
         out = self.conv3(out)
         activations.append(out)
         out = torch.sigmoid(out)
-        out = out.squeeze(dim=1)
         return out, activations

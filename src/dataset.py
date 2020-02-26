@@ -7,12 +7,14 @@ from torch.utils.data import DataLoader
 from torch.utils.data.dataloader import default_collate
 from torch.utils.data.dataset import Dataset
 from torchvision import datasets, transforms
+from PIL import Image
+
 if 'google.colab' in sys.modules:
     DATA_PATH = '/content'
 else:
     DATA_PATH = 'data'
 
-INPUT_SHAPE = (1, 1024, 1024)
+INPUT_SHAPE = (1, 256, 256)
 CLASS_LABELS = []
 
 
@@ -20,22 +22,25 @@ def get_collate_fn(device):
     return lambda x: map(lambda b: b.to(device), default_collate(x))
 
 
-def get_transforms():
-    return transforms.Compose([
+IMG_TRANSFORM = transforms.Compose([
         transforms.ToTensor(),
         transforms.ToPILImage(),
-        # transforms.Resize(INPUT_SHAPE[1:]),
-        # transforms.Grayscale(num_output_channels=1),
+        transforms.Resize(INPUT_SHAPE[1:]),
         transforms.ToTensor(),
-        # transforms.Normalize((0.1307,), (0.3081,))
+    ])
+
+MASK_TRANSFORM = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.ToPILImage(),
+        transforms.Resize(INPUT_SHAPE[1:], Image.NEAREST),
+        transforms.ToTensor(),
     ])
 
 
 def load_train_data(args, device):
-    transform = get_transforms()
     collate_fn = get_collate_fn(device)
-    train_set = LungDataset('train', n=100, mask_only=True, transform=transform)
-    val_set = LungDataset('val', n=100, transform=transform)
+    train_set = LungDataset('train', n=100, mask_only=True)
+    val_set = LungDataset('val', n=100)
     train_loader = DataLoader(train_set,
                               batch_size=args.batch_size,
                               shuffle=True,
@@ -98,7 +103,7 @@ def row_to_data(id_, rle):
     filename = f'{DATA_PATH}/train_images/{id_}.dcm'
     img = pydicom.read_file(filename).pixel_array / 255
     mask = rle2mask(rle)
-    return img[None, :, :].astype("float32"), mask
+    return img[:, :, None].astype("float32"), mask
 
 
 def read_csv(filename, has_masks=True):
@@ -111,11 +116,13 @@ def read_csv(filename, has_masks=True):
 
 class LungDataset(Dataset):
     ''' Dataset for training a model on a dataset. '''
-    def __init__(self, mode, n=None, lazy=True, mask_only=False, transform=None):
+    def __init__(self, mode, n=None, lazy=True, mask_only=False, img_transform=IMG_TRANSFORM, mask_transform=MASK_TRANSFORM):
         super().__init__()
         self.lazy = lazy
         self.mode = mode
-        self.transform = transform
+        self.img_transform = img_transform
+        self.mask_transform = mask_transform
+        assert bool(mask_transform) == bool(img_transform)
         if mode == 'train' or mode == 'val':
             self.data = read_csv(f'{DATA_PATH}/train-rle.csv')
             if n is not None:
@@ -140,8 +147,9 @@ class LungDataset(Dataset):
             else:
                 img, mask = self.data[index]
 
-            if self.transform:
-                img = self.transform(img)
+            if self.img_transform:
+                img = self.img_transform(img)
+                mask = self.mask_transform(mask)
 
             return img, mask
         else:

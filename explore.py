@@ -34,11 +34,14 @@ def explore():
 
 def plot_pixel_array(arr, figsize=(10, 10)):
     """arr should be a numpy array"""
+    arr = arr.squeeze()
     plt.figure(figsize=figsize)
     plt.imshow(arr, cmap=plt.cm.bone)
     plt.show()
 
 def plot_with_mask(im, mask, figsize=(10, 10)):
+    im = im.squeeze()
+    mask = mask.squeeze()
     plt.figure(figsize=figsize)
     plt.imshow(im + mask, cmap=plt.cm.bone)
     if mask.sum() == 0:

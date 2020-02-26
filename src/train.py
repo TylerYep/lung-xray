@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
+from explore import plot_with_mask
 from src import util
 from src.args import init_pipeline
 from src.dataset import load_train_data
