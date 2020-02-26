@@ -11,7 +11,8 @@ class UNet(nn.Module):
 
     def forward(self, x):
         """ Forward pass for your feedback prediction network. """
-        out = self.unet(x)
+        out = torch.cat([x] * 3, dim=1)
+        out = self.unet(out)
         return out
 
     def forward_with_activations(self, x):

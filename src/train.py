@@ -11,7 +11,7 @@ from src import util
 from src.args import init_pipeline
 from src.dataset import load_train_data
 from src.metric_tracker import MetricTracker, Mode
-from src.models import BasicCNN as Model
+from src.models import UNet as Model
 from src.verify import verify_model
 from src.viz import visualize, visualize_trained
 
@@ -73,9 +73,9 @@ def train(arg_list=None):
     train_loader, val_loader, init_params = load_train_data(args, device)
     model, criterion, optimizer = load_model(args, device, checkpoint, init_params, train_loader)
     run_name, metrics = init_metrics(args, checkpoint)
-    if args.visualize:
-        metrics.add_network(model, train_loader)
-        visualize(model, train_loader, run_name)
+    # if args.visualize:
+    #     metrics.add_network(model, train_loader)
+    #     visualize(model, train_loader, run_name)
 
     util.set_rng_state(checkpoint)
     start_epoch = metrics.epoch + 1

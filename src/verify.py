@@ -82,7 +82,6 @@ def check_batch_dimension(model, loader, optimizer, test_val=1):
     model.eval()
     torch.set_grad_enabled(True)
     data, _ = next(iter(loader))
-    print(data.shape)
     optimizer.zero_grad()
     data.requires_grad_()
 

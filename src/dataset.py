@@ -14,7 +14,7 @@ if 'google.colab' in sys.modules:
 else:
     DATA_PATH = 'data'
 
-INPUT_SHAPE = (1, 256, 256)
+INPUT_SHAPE = (1, 64, 64)
 CLASS_LABELS = []
 
 
@@ -60,7 +60,7 @@ def load_test_data(args, device):
 
 
 # This function works
-def rle2mask(rle, height=INPUT_SHAPE[1], width=INPUT_SHAPE[2], fill_value=1):
+def rle2mask(rle, height=1024, width=1024, fill_value=1):
     ''' https://www.kaggle.com/rishabhiitbhu/unet-with-resnet34-encoder-pytorch '''
     component = np.zeros((height, width), np.float32)
     rle = np.array([int(s) for s in rle.strip().split(' ')])
