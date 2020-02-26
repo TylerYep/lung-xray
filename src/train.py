@@ -12,6 +12,7 @@ from src.args import init_pipeline
 from src.dataset import load_train_data
 from src.metric_tracker import MetricTracker, Mode
 from src.models import UNet as Model
+# from src.models import BasicCNN as Model
 from src.verify import verify_model
 from src.viz import visualize, visualize_trained
 
@@ -27,7 +28,7 @@ else:
 METRIC_NAMES = ['Loss', 'IoU']
 
 
-def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
+def train_and_validate(model, loader, optimizer, criterion, metrics, mode, plot=False):
     if mode == Mode.TRAIN:
         model.train()
         torch.set_grad_enabled(True)
@@ -42,13 +43,14 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
                 optimizer.zero_grad()
 
             output = model(data)
-            plt.imshow(data.detach().numpy().squeeze()[0])
-            plt.show()
-            plt.imshow(output.detach().numpy().squeeze()[0] > 0.4)
-            print(np.unique(output.detach().numpy().squeeze()[0]))
-            plt.show()
-            plt.imshow(target.detach().numpy().squeeze()[0])
-            plt.show()
+            if mode == Mode.TRAIN and plot:
+                plt.imshow(data.detach().numpy().squeeze()[0])
+                plt.show()
+                plt.imshow(output.detach().numpy().squeeze()[0] > 0.4)
+                print(np.unique(output.detach().numpy().squeeze()[0]))
+                plt.show()
+                plt.imshow(target.detach().numpy().squeeze()[0])
+                plt.show()
 
             loss = criterion(output, target)
             if mode == Mode.TRAIN:
@@ -57,7 +59,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
 
             tqdm_dict = metrics.batch_update(i, data, loss, output, target, mode)
             pbar.set_postfix(tqdm_dict)
-            pbar.update()
+            pbar.update() # There is some bug here when using notebooks
 
     return metrics.get_epoch_results(mode)
 
@@ -91,8 +93,10 @@ def train(arg_list=None):
     for epoch in range(start_epoch, start_epoch + args.epochs):
         print(f'Epoch [{epoch}/{start_epoch + args.epochs - 1}]')
         metrics.next_epoch()
-        tr_loss = train_and_validate(model, train_loader, optimizer, criterion, metrics, Mode.TRAIN)
-        val_loss = train_and_validate(model, val_loader, optimizer, criterion, metrics, Mode.VAL)
+        tr_loss = train_and_validate(model, train_loader, optimizer, criterion, metrics, Mode.TRAIN, args.plot)
+        val_loss = 0
+        if args.no_validate:
+            val_loss = train_and_validate(model, val_loader, optimizer, criterion, metrics, Mode.VAL)
 
         is_best = metrics.update_best_metric(val_loss)
         util.save_checkpoint({

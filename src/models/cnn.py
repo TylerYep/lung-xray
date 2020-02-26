@@ -8,8 +8,9 @@ class BasicCNN(nn.Module):
         super().__init__()
         #torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True, padding_mode='zeros')
         self.conv1 = nn.Conv2d(1, 32, 3, 1, padding=1)
-        self.conv2 = nn.Conv2d(32, 32, 3, 1, padding=1)
-        self.conv3 = nn.Conv2d(32, 1, 3, 1, padding=1)
+        self.conv2 = nn.Conv2d(32, 64, 3, 1, padding=1)
+        self.conv3 = nn.Conv2d(64, 128, 3, 1, padding=1)
+        self.conv4 = nn.Conv2d(128, 1, 3, 1, padding=1)
         # self.dropout1 = nn.Dropout2d(0.25)
         # self.dropout2 = nn.Dropout2d(0.5)
 
@@ -20,6 +21,8 @@ class BasicCNN(nn.Module):
         out = self.conv2(out)
         out = F.relu(out)
         out = self.conv3(out)
+        out = F.relu(out)
+        out = self.conv4(out)
         out = torch.sigmoid(out)
         return out
 

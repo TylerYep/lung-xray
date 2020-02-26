@@ -38,6 +38,12 @@ def init_pipeline(arg_list=None):
     parser.add_argument('--visualize', action='store_true', default=True,
                         help='save visualization files')
 
+    parser.add_argument('--no-validate', action='store_false', default=True,
+                        help='dont validate')
+
+    parser.add_argument('--plot', action='store_true', default=False,
+                        help='plot training examples')
+
     args = parser.parse_args(arg_list)
     checkpoint = util.load_checkpoint(args.checkpoint)
 
