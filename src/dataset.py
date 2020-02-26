@@ -14,7 +14,7 @@ if 'google.colab' in sys.modules:
 else:
     DATA_PATH = 'data'
 
-INPUT_SHAPE = (1, 256, 256)
+INPUT_SHAPE = (1, 64, 64)
 CLASS_LABELS = []
 
 
