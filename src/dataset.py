@@ -106,7 +106,7 @@ def row_to_data(id_, rle):
     return img[:, :, None].astype("float32"), mask
 
 
-def read_csv(filename, has_masks=True):
+def read_csv(filename):
     """
     Reads a csv file as a list of lists
     """
@@ -122,20 +122,22 @@ class LungDataset(Dataset):
         self.mode = mode
         self.img_transform = img_transform
         self.mask_transform = mask_transform
+        self.fname = f'{DATA_PATH}/{mode}.csv'
         assert bool(mask_transform) == bool(img_transform)
-        if mode == 'train' or mode == 'val':
-            self.data = read_csv(f'{DATA_PATH}/train-rle.csv')
+
+        if mode == 'test':
+            self.data = sorted(glob.glob(f'{DATA_PATH}/test_images/*.dcm'))
+            if n is not None:
+                self.data = self.data[:n]
+
+        else: # train or val
+            self.data = read_csv(self.fname)
             if n is not None:
                 self.data = self.data[:n]
             if mask_only:
                 self.data = [(id_, rle) for (id_, rle) in self.data if rle != "-1"]
             if not self.lazy:
                 self.data = [row_to_data(id_, rle) for id_, rle in self.data]
-
-        elif mode == 'test':
-            self.data = sorted(glob.glob(f'{DATA_PATH}/test_images/*.dcm'))
-            if n is not None:
-                self.data = self.data[:n]
 
     def __len__(self):
         return len(self.data)
@@ -159,5 +161,8 @@ class LungDataset(Dataset):
 if __name__ == '__main__':
     # z = read_csv(f'{DATA_PATH}/train-rle.csv')
     # print(x)
-    z = LungDataset('train')
+    z = LungDataset('train', mask_only=True)
+    print(len(z))
     print(z[0][0].shape, z[0][1].shape)
+    z = LungDataset('val', mask_only=True)
+    print(len(z))

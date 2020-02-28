@@ -1,6 +1,9 @@
 import sys
 import pandas as pd
 import pydicom
+import csv
+import random
+from dataset import read_csv
 
 if 'google.colab' in sys.modules:
     DATA_PATH = '/content'
@@ -62,4 +65,21 @@ def preprocess():
 
     return data
 
-preprocess()
+if __name__ == "__main__":
+    train_val_split = [0.9, 0.1]
+    data = read_csv('data/train-rle.csv')
+    random.shuffle(data)
+    train = data[:int(train_val_split[0]*len(data))]
+    val = data[int(train_val_split[0]*len(data)):]
+    print(len(train), len(val))
+    with open('data/train.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',',
+                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(["ImageId", "EncodedPixels"])
+        writer.writerows(train)
+    with open('data/val.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',',
+                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(["ImageId", "EncodedPixels"])
+        writer.writerows(val)
+    # train_inds = []
