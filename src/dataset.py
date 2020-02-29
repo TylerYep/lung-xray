@@ -49,15 +49,14 @@ def load_train_data(args, device):
     val_loader = DataLoader(val_set,
                             batch_size=args.batch_size,
                             collate_fn=collate_fn)
-    return train_loader, val_loader, {}
+    return train_loader, val_loader, len(train_set), len(val_set), {}
 
 
 def load_test_data(args, device):
-    transform = get_transforms()
     collate_fn = get_collate_fn(device)
     test_set = LungDataset('test')
     test_loader = DataLoader(test_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
-    return test_loader
+    return test_loader, len(test_set)
 
 
 # This function works
