@@ -71,7 +71,10 @@ def init_metrics(args, checkpoint):
 def load_model(args, device, checkpoint, init_params, train_loader):
     criterion = nn.BCELoss()
     model = Model(*init_params).to(device)
-    optimizer = optim.AdamW(model.parameters(), lr=args.lr)
+    for ind, param in enumerate(model.parameters()):
+        if ind < 66:
+            param.requires_grad = False
+    optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
     verify_model(model, train_loader, optimizer, criterion)
     util.load_state_dict(checkpoint, model, optimizer)
     return model, criterion, optimizer

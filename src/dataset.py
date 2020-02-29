@@ -29,6 +29,7 @@ IMG_TRANSFORM = transforms.Compose([
         transforms.ToTensor(),
     ])
 
+
 MASK_TRANSFORM = transforms.Compose([
         transforms.ToTensor(),
         transforms.ToPILImage(),
@@ -39,8 +40,8 @@ MASK_TRANSFORM = transforms.Compose([
 
 def load_train_data(args, device):
     collate_fn = get_collate_fn(device)
-    train_set = LungDataset('train', n=1000)
-    val_set = LungDataset('val', n=1000)
+    train_set = LungDataset('train')
+    val_set = LungDataset('val')
     train_loader = DataLoader(train_set,
                               batch_size=args.batch_size,
                               shuffle=True,
@@ -54,7 +55,7 @@ def load_train_data(args, device):
 def load_test_data(args, device):
     transform = get_transforms()
     collate_fn = get_collate_fn(device)
-    test_set = LungDataset('test', transform=transforms)
+    test_set = LungDataset('test')
     test_loader = DataLoader(test_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
     return test_loader
 
@@ -106,14 +107,6 @@ def row_to_data(id_, rle):
     return img[:, :, None].astype("float32"), mask
 
 
-def read_csv(filename):
-    """
-    Reads a csv file as a list of lists
-    """
-    with open(filename, newline='') as csvfile:
-        return list(csv.reader(csvfile))[1:]
-
-
 class LungDataset(Dataset):
     ''' Dataset for training a model on a dataset. '''
     def __init__(self, mode, n=None, lazy=True, mask_only=False, img_transform=IMG_TRANSFORM, mask_transform=MASK_TRANSFORM):
@@ -131,13 +124,14 @@ class LungDataset(Dataset):
                 self.data = self.data[:n]
 
         else: # train or val
-            self.data = read_csv(self.fname)
-            if n is not None:
-                self.data = self.data[:n]
-            if mask_only:
-                self.data = [(id_, rle) for (id_, rle) in self.data if rle != "-1"]
-            if not self.lazy:
-                self.data = [row_to_data(id_, rle) for id_, rle in self.data]
+            with open(self.fname, newline='') as csvfile:
+                self.data = list(csv.reader(csvfile))[1:]
+                if n is not None:
+                    self.data = self.data[:n]
+                if mask_only:
+                    self.data = [(id_, rle) for (id_, rle) in self.data if rle != "-1"]
+                if not self.lazy:
+                    self.data = [row_to_data(id_, rle) for id_, rle in self.data]
 
     def __len__(self):
         return len(self.data)
@@ -159,8 +153,6 @@ class LungDataset(Dataset):
 
 
 if __name__ == '__main__':
-    # z = read_csv(f'{DATA_PATH}/train-rle.csv')
-    # print(x)
     z = LungDataset('train', mask_only=True)
     print(len(z))
     print(z[0][0].shape, z[0][1].shape)

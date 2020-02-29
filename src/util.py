@@ -13,7 +13,7 @@ SAVE_DIR = 'checkpoints'
 def get_run_name(args: Namespace, save_dir: str = SAVE_DIR) -> str:
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
-        
+
     if args.checkpoint:
         return os.path.join(save_dir, args.checkpoint)
 
@@ -65,7 +65,8 @@ def load_checkpoint(checkpoint_name: str) -> Dict[str, Any]:
     if not checkpoint_name:
         return {}
     print('Loading checkpoint...')
-    return torch.load(os.path.join(SAVE_DIR, checkpoint_name, 'model_best.pth.tar'))
+    return torch.load(os.path.join(SAVE_DIR, checkpoint_name, 'model_best.pth.tar'),
+                      map_location=torch.device('cpu'))
 
 
 def load_state_dict(checkpoint: Dict, model: nn.Module, optimizer=None):

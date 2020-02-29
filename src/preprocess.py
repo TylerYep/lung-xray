@@ -73,13 +73,17 @@ if __name__ == "__main__":
     val = data[int(train_val_split[0]*len(data)):]
     print(len(train), len(val))
     with open('data/train.csv', 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile, delimiter=',',
-                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        writer = csv.writer(csvfile,
+                            delimiter=',',
+                            quotechar='|',
+                            quoting=csv.QUOTE_MINIMAL)
         writer.writerow(["ImageId", "EncodedPixels"])
         writer.writerows(train)
     with open('data/val.csv', 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile, delimiter=',',
-                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        writer = csv.writer(csvfile,
+                            delimiter=',',
+                            quotechar='|',
+                            quoting=csv.QUOTE_MINIMAL)
         writer.writerow(["ImageId", "EncodedPixels"])
         writer.writerows(val)
     # train_inds = []
