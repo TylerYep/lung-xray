@@ -30,7 +30,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode, plot=
     else:
         model.eval()
         torch.set_grad_enabled(False)
-    metrics.set_num_examples(len(loader)*loader.batch_size)
+    metrics.set_num_batches(len(loader))
     with tqdm(desc=str(mode), total=len(loader), ncols=120) as pbar:
         for i, (data, target) in enumerate(loader):
             if mode == Mode.TRAIN:
@@ -70,7 +70,7 @@ def load_model(args, device, checkpoint, init_params, train_loader):
         if ind < 66:
             param.requires_grad = False
     optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
-    verify_model(model, train_loader, optimizer, criterion)
+    #verify_model(model, train_loader, optimizer, criterion)
     util.load_state_dict(checkpoint, model, optimizer)
     return model, criterion, optimizer
 

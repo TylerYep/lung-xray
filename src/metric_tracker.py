@@ -106,9 +106,9 @@ class MetricTracker:
             if i > 0:
                 self.write_all(num_steps, mode)
             self.reset_all()
-        elif mode == Mode.VAL:
-            if len(data.size()) == 4:  # (N, C, H, W)
-                self.add_images(val_dict, num_steps)
+        # elif mode == Mode.VAL:
+        #     if len(data.size()) == 4:  # (N, C, H, W)
+        #         self.add_images(val_dict, num_steps)
         return {}
 
     def get_epoch_results(self, mode) -> float:

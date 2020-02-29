@@ -20,7 +20,7 @@ def init_pipeline(arg_list=None):
     parser.add_argument('--epochs', type=int, default=100, metavar='N',
                         help='number of epochs to train (default: 14)')
 
-    parser.add_argument('--lr', type=float, default=3e-4, metavar='LR',
+    parser.add_argument('--lr', type=float, default=3e-3, metavar='LR',
                         help='learning rate (default: 3e-3)')
 
     parser.add_argument('--gamma', type=float, default=0.7, metavar='M',
