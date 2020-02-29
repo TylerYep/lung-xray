@@ -20,6 +20,7 @@ pydicom = "*"
 torchsummary = "*"
 jupyter = "*"
 segmentation-models-pytorch = "*"
+tensorflow = "*"
 
 [requires]
 python_version = "3.7"
