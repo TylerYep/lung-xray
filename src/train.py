@@ -34,8 +34,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode, plot=
     else:
         model.eval()
         torch.set_grad_enabled(False)
-
-    metrics.set_num_examples(len(loader))
+    metrics.set_num_examples(len(loader)*loader.batch_size)
     with tqdm(desc=str(mode), total=len(loader), ncols=120) as pbar:
         for i, (data, target) in enumerate(loader):
             if mode == Mode.TRAIN:

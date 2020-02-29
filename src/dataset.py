@@ -153,8 +153,10 @@ class LungDataset(Dataset):
 
 
 if __name__ == '__main__':
-    z = LungDataset('train', mask_only=True)
-    print(len(z))
-    print(z[0][0].shape, z[0][1].shape)
-    z = LungDataset('val', mask_only=True)
-    print(len(z))
+    train_set = LungDataset('train', mask_only=True)
+    train_loader = DataLoader(train_set,
+                              batch_size=4,
+                              shuffle=True,
+                            )
+    print(len(train_set))
+    print(train_loader.batch_size * len(train_loader))
