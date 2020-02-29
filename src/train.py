@@ -23,10 +23,6 @@ else:
     from tqdm import tqdm
 
 
-# Adding metrics here will automatically search the metrics/ folder for an implementation.
-METRIC_NAMES = ['Loss', 'IoU']
-
-
 def train_and_validate(model, loader, optimizer, criterion, metrics, mode, plot=False):
     if mode == Mode.TRAIN:
         model.train()
@@ -60,10 +56,10 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode, plot=
     return metrics.get_epoch_results(mode)
 
 
-def init_metrics(args, checkpoint):
+def init_metrics(args, checkpoint, train_len, val_len):
     run_name = checkpoint.get('run_name', util.get_run_name(args))
     metric_checkpoint = checkpoint.get('metric_obj', {})
-    metrics = MetricTracker(METRIC_NAMES, run_name, args.log_interval, **metric_checkpoint)
+    metrics = MetricTracker(run_name, train_len, val_len, args.log_interval, **metric_checkpoint)
     return run_name, metrics
 
 
@@ -81,9 +77,9 @@ def load_model(args, device, checkpoint, init_params, train_loader):
 
 def train(arg_list=None):
     args, device, checkpoint = init_pipeline(arg_list)
-    train_loader, val_loader, init_params = load_train_data(args, device)
+    train_loader, val_loader, train_len, val_len, init_params = load_train_data(args, device)
     model, criterion, optimizer = load_model(args, device, checkpoint, init_params, train_loader)
-    run_name, metrics = init_metrics(args, checkpoint)
+    run_name, metrics = init_metrics(args, checkpoint, train_len, val_len)
     # if args.visualize:
     #     metrics.add_network(model, train_loader)
     #     visualize(model, train_loader, run_name)
