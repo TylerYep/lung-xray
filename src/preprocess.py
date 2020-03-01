@@ -54,6 +54,7 @@ def preprocess():
         data['patient_age'] = int(dicom_data.PatientAge)
         data['patient_sex'] = dicom_data.PatientSex
         data['pixel_spacing'] = dicom_data.PixelSpacing
+
     #     encoded_pixels_list = rles_df[rles_df['ImageId'] == dicom_data.SOPInstanceUID]['EncodedPixels'].values
     #     pneumothorax = any([encoded_pixels != ' -1' for encoded_pixels in encoded_pixels_list])
     #     data['encoded_pixels_list'] = encoded_pixels_list
@@ -67,7 +68,7 @@ def preprocess():
 
 if __name__ == "__main__":
     pass
-    # Already ran! 
+    # Already ran!
 
     # train_val_split = [0.9, 0.1]
     # data = read_csv('data/train-rle.csv')
