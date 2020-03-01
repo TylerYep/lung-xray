@@ -24,7 +24,7 @@ def main():
     clf_dict = {clf.__name__: clf for clf in classifiers}
 
     ###
-    clf_name = 'LinearSVM'
+    clf_name = 'LogisticRegression'
     kwargs = {}
     ###
 

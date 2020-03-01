@@ -10,13 +10,11 @@ from src.visualizations import *
 
 def main():
     args, device, checkpoint = init_pipeline()
-    train_loader, _, init_params = load_train_data(args, device)
+    train_loader, val_loader, _, _, init_params = load_train_data(args, device)
     model = Model(*init_params).to(device)
-    util.load_state_dict(checkpoint, model)
-    # model = models.resnet18(pretrained=True)
+    # util.load_state_dict(checkpoint, model)
 
-    visualize(model, train_loader)
-    # visualize_trained(model, train_loader)
+    visualize(model, val_loader)
 
 
 def visualize(model, loader, run_name='', metrics=None):

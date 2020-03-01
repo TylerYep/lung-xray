@@ -9,6 +9,7 @@ from explore import plot_with_mask
 from src import util
 from src.args import init_pipeline
 from src.dataset import load_train_data
+from src.losses import dice_loss
 from src.metric_tracker import MetricTracker, Mode
 from src.models import UNet as Model
 from src.verify import verify_model
@@ -29,6 +30,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode, plot=
     else:
         model.eval()
         torch.set_grad_enabled(False)
+
     metrics.set_num_batches(len(loader))
     with tqdm(desc=str(mode), total=len(loader), ncols=120) as pbar:
         for i, (data, target) in enumerate(loader):
@@ -43,7 +45,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode, plot=
                 axs[2].imshow(target.detach().numpy().squeeze()[0])
                 plt.show()
 
-            loss = criterion(output, target)
+            loss = criterion(output, target) + dice_loss(output, target)
             if mode == Mode.TRAIN:
                 loss.backward()
                 optimizer.step()
