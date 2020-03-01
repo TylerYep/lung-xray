@@ -11,7 +11,7 @@ def init_pipeline(arg_list=None):
 
     parser = argparse.ArgumentParser(description='PyTorch ML Pipeline')
 
-    parser.add_argument('--batch-size', type=int, default=128, metavar='N',
+    parser.add_argument('--batch-size', type=int, default=8, metavar='N',
                         help='input batch size for training (default: 100)')
 
     parser.add_argument('--test-batch-size', type=int, default=128, metavar='N',
@@ -20,7 +20,7 @@ def init_pipeline(arg_list=None):
     parser.add_argument('--epochs', type=int, default=100, metavar='N',
                         help='number of epochs to train (default: 14)')
 
-    parser.add_argument('--lr', type=float, default=3e-3, metavar='LR',
+    parser.add_argument('--lr', type=float, default=3e-4, metavar='LR',
                         help='learning rate (default: 3e-3)')
 
     parser.add_argument('--gamma', type=float, default=0.7, metavar='M',

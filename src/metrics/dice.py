@@ -15,9 +15,9 @@ class Dice(Metric):
         output, target = val_dict['output'], val_dict['target']
         output = output > 0.5
         output, target = output.squeeze(), target.squeeze()
-        intersection = (output & (target).bool()).float().sum((1, 2)) + SMOOTH
-        union = (output | target.bool()).float().sum((1, 2)) + SMOOTH
-        accuracy = (2*intersection / union + intersection).sum().item()
+        intersection = (output & (target).bool()).float().sum((1, 2))
+        union = (output | target.bool()).float().sum((1, 2))
+        accuracy = ((2*intersection + SMOOTH) / (union + intersection + SMOOTH)).sum().item()
         self.epoch_acc += accuracy
         self.running_acc += accuracy
         return accuracy
