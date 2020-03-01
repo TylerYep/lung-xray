@@ -14,7 +14,7 @@ class Mode(Enum):
 
 
 # Adding metrics here will automatically search the metrics/ folder for an implementation.
-METRIC_NAMES = ['Loss', 'IoU']
+METRIC_NAMES = ['Loss', 'IoU', 'Dice']
 
 
 class MetricTracker:

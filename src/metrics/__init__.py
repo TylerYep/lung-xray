@@ -5,6 +5,7 @@ import sys
 from .loss import Loss
 from .accuracy import Accuracy
 from .iou import IoU
+from .dice import Dice
 
 def get_metric(metric_name: str) -> Any:
     ''' Retrieves class initializer from its string name. '''
