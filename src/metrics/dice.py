@@ -1,6 +1,7 @@
 from .metric import Metric
+import torch
 
-SMOOTH = 1e-6
+SMOOTH = 1e-7
 
 class Dice(Metric):
     def __init__(self):
@@ -14,9 +15,13 @@ class Dice(Metric):
     def update(self, val_dict):
         output, target = val_dict['output'], val_dict['target']
         output = output > 0.5
-        output, target = output.squeeze(), target.squeeze()
-        intersection = (output & (target).bool()).float().sum((1, 2))
-        union = (output | target.bool()).float().sum((1, 2))
+        batch_size = output.shape[0]
+        dice_target = target.reshape(batch_size, -1)
+        dice_output = output.reshape(batch_size, -1)
+        # intersection = (output & (target).bool()).float().sum((1, 2))
+        # union = (output | target.bool()).float().sum((1, 2))
+        intersection = torch.sum(dice_output * dice_target, dim=1)
+        union = torch.sum(dice_output, dim=1) + torch.sum(dice_target, dim=1)
         accuracy = ((2*intersection + SMOOTH) / (union + intersection + SMOOTH)).sum().item()
         self.epoch_acc += accuracy
         self.running_acc += accuracy

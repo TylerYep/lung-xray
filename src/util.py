@@ -65,8 +65,10 @@ def load_checkpoint(checkpoint_name: str) -> Dict[str, Any]:
     if not checkpoint_name:
         return {}
     print('Loading checkpoint...')
-    return torch.load(os.path.join(SAVE_DIR, checkpoint_name, 'model_best.pth.tar'),
+    return torch.load(os.path.join(SAVE_DIR, checkpoint_name, 'checkpoint.pth.tar'),
                       map_location=torch.device('cpu'))
+    # return torch.load(os.path.join(SAVE_DIR, checkpoint_name, 'model_best.pth.tar'),
+    #                   map_location=torch.device('cpu'))
 
 
 def load_state_dict(checkpoint: Dict, model: nn.Module, optimizer=None):
