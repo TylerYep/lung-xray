@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from src.viz import plot_pixel_array, plot_with_mask
 
 from src.dataset import LungDataset, DATA_PATH
 
@@ -32,21 +33,6 @@ def explore():
 #             print("Pixel spacing....:", dataset.PixelSpacing)
 
 
-def plot_pixel_array(arr, figsize=(10, 10)):
-    """arr should be a numpy array"""
-    arr = arr.squeeze()
-    plt.figure(figsize=figsize)
-    plt.imshow(arr, cmap=plt.cm.bone)
-    plt.show()
-
-def plot_with_mask(im, mask, figsize=(10, 10)):
-    im = im.squeeze()
-    mask = mask.squeeze()
-    plt.figure(figsize=figsize)
-    plt.imshow(im + mask, cmap=plt.cm.bone)
-    if mask.sum() == 0:
-        plt.title('no mask')
-    plt.show()
 
 
 if __name__ == '__main__':

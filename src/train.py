@@ -14,7 +14,7 @@ from src.losses import DiceLoss
 from src.metric_tracker import MetricTracker, Mode
 from src.models import UNet as Model
 from src.verify import verify_model
-from src.viz import visualize, visualize_trained
+from src.viz import visualize, visualize_trained, plot_sbs
 
 import matplotlib.pyplot as plt
 
@@ -22,6 +22,7 @@ if 'google.colab' in sys.modules:
     from tqdm import tqdm_notebook as tqdm
 else:
     from tqdm import tqdm
+
 
 
 def train_and_validate(model, loader, optimizer, criterion, metrics, mode, plot=False):
@@ -40,11 +41,10 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode, plot=
 
             output = model(data)
             if mode == Mode.TRAIN and plot:
-                _, axs = plt.subplots(3)
-                axs[0].imshow(data.detach().numpy().squeeze()[0])
-                axs[1].imshow(output.detach().numpy().squeeze()[0] > 0.3)
-                axs[2].imshow(target.detach().numpy().squeeze()[0])
-                plt.show()
+                plot_sbs(data.detach().numpy().squeeze()[0]
+                        , output.detach().numpy().squeeze()[0] > 0.3
+                        , target.detach().numpy().squeeze()[0]
+                        )
 
             loss = criterion(output, target)
             if mode == Mode.TRAIN:
