@@ -1,4 +1,5 @@
-import sys import random
+import sys
+import random
 import numpy as np
 import torch
 import torch.nn as nn
@@ -9,7 +10,7 @@ from explore import plot_with_mask
 from src import util
 from src.args import init_pipeline
 from src.dataset import load_train_data
-from src.losses import dice_loss
+from src.losses import DiceLoss
 from src.metric_tracker import MetricTracker, Mode
 from src.models import UNet as Model
 from src.verify import verify_model
@@ -45,7 +46,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode, plot=
                 axs[2].imshow(target.detach().numpy().squeeze()[0])
                 plt.show()
 
-            loss = criterion(output, target) + dice_loss(output, target)
+            loss = criterion(output, target)
             if mode == Mode.TRAIN:
                 loss.backward()
                 optimizer.step()
@@ -65,7 +66,7 @@ def init_metrics(args, checkpoint, train_len, val_len):
 
 
 def load_model(args, device, checkpoint, init_params, train_loader):
-    criterion = nn.BCELoss()
+    criterion = DiceLoss()
     model = Model(*init_params).to(device)
     for ind, param in enumerate(model.parameters()):
         if ind < 66:
