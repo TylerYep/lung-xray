@@ -94,8 +94,8 @@ class MetricTracker:
             out = output.detach()[j]
             out = out > 0.3
             targ = target.detach()[j]
-            self.writer.add_image(f'{j}/{self.epoch}/pred', out, num_steps)
-            self.writer.add_image(f'{j}/{self.epoch}/target', targ, num_steps)
+            self.writer.add_image(f'{j}/{num_steps}/pred', out, num_steps)
+            self.writer.add_image(f'{j}/{num_steps}/target', targ, num_steps)
 
     def batch_update(self, i, data, loss, output, target, mode):
         names = ('data', 'loss', 'output', 'target')

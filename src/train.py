@@ -14,11 +14,7 @@ from src.args import init_pipeline
 from src.dataset import load_train_data
 from src.losses import DiceLoss
 from src.metric_tracker import MetricTracker, Mode
-<<<<<<< HEAD
-from src.models import BasicCNN as Model
-=======
 from src.models import MODEL_DICT
->>>>>>> cad2f0516fa5d6ee10f41015f7786e37a8764b8d
 from src.verify import verify_model
 from src.viz import visualize, visualize_trained, plot_sbs
 

@@ -90,23 +90,23 @@ def row_to_data(id_, rle):
     return img[:, :, None].astype("float32"), mask
 
 
-
-
 def image_transform(img_dim):
     return transforms.Compose([
-                transforms.ToTensor(),
-                transforms.ToPILImage(),
-                transforms.Resize((img_dim, img_dim)),
-                transforms.ToTensor(),
-            ])
+        transforms.ToTensor(),
+        transforms.ToPILImage(),
+        transforms.Resize((img_dim, img_dim)),
+        transforms.ToTensor(),
+    ])
+
 
 def mask_transform(mask_dim):
     return transforms.Compose([
-                transforms.ToTensor(),
-                transforms.ToPILImage(),
-                transforms.Resize((mask_dim, mask_dim), Image.NEAREST),
-                transforms.ToTensor(),
-            ])
+        transforms.ToTensor(),
+        transforms.ToPILImage(),
+        transforms.Resize((mask_dim, mask_dim), Image.NEAREST),
+        transforms.ToTensor(),
+    ])
+
 
 class LungDataset(Dataset):
     ''' Dataset for training a model on a dataset. '''
@@ -159,7 +159,6 @@ if __name__ == '__main__':
     train_set = LungDataset('train', mask_only=True)
     train_loader = DataLoader(train_set,
                               batch_size=4,
-                              shuffle=True,
-                            )
+                              shuffle=True)
     print(len(train_set))
     print(train_loader.batch_size * len(train_loader))
