@@ -73,8 +73,8 @@ def load_model(args, device, checkpoint, init_params, train_loader):
             if ind < 20:
                 param.requires_grad = False
     optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
-    verify_model(model, train_loader, optimizer, criterion, device)
-    util.load_state_dict(checkpoint, model, optimizer)
+    # verify_model(model, train_loader, optimizer, criterion, device)
+    # util.load_state_dict(checkpoint, model, optimizer)
     return model, criterion, optimizer
 
 
@@ -83,9 +83,9 @@ def train(arg_list=None):
     train_loader, val_loader, train_len, val_len, init_params = load_train_data(args, device)
     model, criterion, optimizer = load_model(args, device, checkpoint, init_params, train_loader)
     run_name, metrics = init_metrics(args, checkpoint, train_len, val_len)
-    if args.visualize:
-        metrics.add_network(model, train_loader)
-        visualize(model, train_loader, run_name)
+    # if args.visualize:
+    #     metrics.add_network(model, train_loader)
+    #     visualize(model, train_loader, run_name)
 
     util.set_rng_state(checkpoint)
     start_epoch = metrics.epoch + 1
