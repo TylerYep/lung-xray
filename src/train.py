@@ -12,7 +12,7 @@ from src.args import init_pipeline
 from src.dataset import load_train_data
 from src.losses import DiceLoss
 from src.metric_tracker import MetricTracker, Mode
-from src.models import UNet as Model
+from src.models import BasicCNN as Model
 from src.verify import verify_model
 from src.viz import visualize, visualize_trained, plot_sbs
 
@@ -25,7 +25,7 @@ else:
 
 
 
-def train_and_validate(model, loader, optimizer, criterion, metrics, mode, plot=False):
+def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
     if mode == Mode.TRAIN:
         model.train()
         torch.set_grad_enabled(True)
@@ -40,12 +40,6 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode, plot=
                 optimizer.zero_grad()
 
             output = model(data)
-            if mode == Mode.TRAIN and plot:
-                plot_sbs(data.detach().numpy().squeeze()[0]
-                        , output.detach().numpy().squeeze()[0] > 0.3
-                        , target.detach().numpy().squeeze()[0]
-                        )
-
             loss = criterion(output, target)
             if mode == Mode.TRAIN:
                 loss.backward()
@@ -68,11 +62,11 @@ def init_metrics(args, checkpoint, train_len, val_len):
 def load_model(args, device, checkpoint, init_params, train_loader):
     criterion = DiceLoss()
     model = Model(*init_params).to(device)
-    for ind, param in enumerate(model.parameters()):
-        if ind < 66:
-            param.requires_grad = False
+    # for ind, param in enumerate(model.parameters()):
+    #     if ind < 66:
+    #         param.requires_grad = False
     optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
-    #verify_model(model, train_loader, optimizer, criterion)
+    verify_model(model, train_loader, optimizer, criterion, device)
     util.load_state_dict(checkpoint, model, optimizer)
     return model, criterion, optimizer
 
@@ -82,16 +76,16 @@ def train(arg_list=None):
     train_loader, val_loader, train_len, val_len, init_params = load_train_data(args, device)
     model, criterion, optimizer = load_model(args, device, checkpoint, init_params, train_loader)
     run_name, metrics = init_metrics(args, checkpoint, train_len, val_len)
-    # if args.visualize:
-    #     metrics.add_network(model, train_loader)
-    #     visualize(model, train_loader, run_name)
+    if args.visualize:
+        metrics.add_network(model, train_loader)
+        visualize(model, train_loader, run_name)
 
     util.set_rng_state(checkpoint)
     start_epoch = metrics.epoch + 1
     for epoch in range(start_epoch, start_epoch + args.epochs):
         print(f'Epoch [{epoch}/{start_epoch + args.epochs - 1}]')
         metrics.next_epoch()
-        tr_loss = train_and_validate(model, train_loader, optimizer, criterion, metrics, Mode.TRAIN, args.plot)
+        tr_loss = train_and_validate(model, train_loader, optimizer, criterion, metrics, Mode.TRAIN)
         val_loss = 0
         if args.no_validate:
             val_loss = train_and_validate(model, val_loader, optimizer, criterion, metrics, Mode.VAL)

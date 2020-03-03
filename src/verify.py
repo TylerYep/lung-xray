@@ -18,7 +18,7 @@ def verify_model(model, loader, optimizer, criterion, device):
     """
     torchsummary.summary(model, INPUT_SHAPE)
     check_batch_dimension(model, loader, optimizer)
-    overfit_example(model, loader, optimizer, criterion, device)
+    # overfit_example(model, loader, optimizer, criterion, device)
     # check_all_layers_training(model, loader, optimizer, criterion)
     print('Verification complete - all tests passed!')
 

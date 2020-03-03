@@ -6,11 +6,11 @@ class DiceLoss(nn.Module):
     def __init__(self):
         super().__init__()
 
-    def forward(self, target, output):
-        return self.dice_loss(target, output)
+    def forward(self, output, target):
+        return self.dice_loss(output, target)
 
     @staticmethod
-    def dice_loss(target, output, eps=1e-7):
+    def dice_loss(output, target, eps=1):
         batch_size = output.shape[0]
         dice_target = target.reshape(batch_size, -1)
         dice_output = output.reshape(batch_size, -1)

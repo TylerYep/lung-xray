@@ -89,11 +89,13 @@ class MetricTracker:
     def add_images(self, val_dict, num_steps):
         data, output, target = val_dict['data'], val_dict['output'], val_dict['target']
         for j in range(output.shape[0]):
-            _, pred_ind = torch.max(output.detach()[j], dim=0)
-            target_ind = int(target.detach()[j])
-            pred_class = CLASS_LABELS[pred_ind]
-            target_class = CLASS_LABELS[target_ind]
-            self.writer.add_image(f'{target_class}/Predicted_{pred_class}', data[j], num_steps)
+            if j > 5:
+                break
+            out = output.detach()[j]
+            out = out > 0.3
+            targ = target.detach()[j]
+            self.writer.add_image(f'{j}/{self.epoch}/pred', out, num_steps)
+            self.writer.add_image(f'{j}/{self.epoch}/target', targ, num_steps)
 
     def batch_update(self, i, data, loss, output, target, mode):
         names = ('data', 'loss', 'output', 'target')
@@ -106,6 +108,9 @@ class MetricTracker:
             if i > 0:
                 self.write_all(num_steps, mode)
             self.reset_all()
+        elif mode == Mode.VAL:
+            if i == 0:
+                self.add_images(val_dict, num_steps)
         return {}
 
     def get_epoch_results(self, mode) -> float:

@@ -26,7 +26,7 @@ def init_pipeline(arg_list=None):
     parser.add_argument('--gamma', type=float, default=0.7, metavar='M',
                         help='Learning rate step gamma (default: 0.7)')
 
-    parser.add_argument('--log-interval', type=int, default=20, metavar='N',
+    parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                         help='how many batches to wait before logging training status')
 
     parser.add_argument('--checkpoint', type=str, default='',

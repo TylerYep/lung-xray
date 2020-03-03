@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import torch
 from .viz_utils import save_figure
 
-def compare_prediction(model, data, target):
+def compare_prediction(model, data, target, run_name):
     print("Comparing predictions to actual")
     model.eval()
     pred = model(data).detach().numpy() > 0.3
@@ -14,7 +14,6 @@ def compare_prediction(model, data, target):
         axs[i, 0].imshow(data[i], cmap=plt.cm.bone)
         axs[i, 1].imshow(pred[i], cmap=plt.cm.bone)
         axs[i, 2].imshow(target[i], cmap=plt.cm.bone)
-    plt.show()
     plt.axis('off')
 
-    # save_figure(run_name, 'activation_layers.png')
+    save_figure(run_name, 'preds.png')

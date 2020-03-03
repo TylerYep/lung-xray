@@ -50,7 +50,7 @@ def visualize(model, loader, run_name='', metrics=None):
     data, target = next(iter(loader))
     view_input(data, target, run_name)
     data, target = next(iter(loader))
-    compare_prediction(model, data, target)
+    compare_prediction(model, data, target, run_name)
 
 
 def visualize_trained(model, loader, run_name='', metrics=None):
