@@ -2,8 +2,9 @@ import argparse
 import random
 import numpy as np
 import torch
-
 from src import util
+import json
+
 
 def init_pipeline(arg_list=None):
     set_random_seeds()
@@ -11,14 +12,26 @@ def init_pipeline(arg_list=None):
 
     parser = argparse.ArgumentParser(description='PyTorch ML Pipeline')
 
+    parser.add_argument('--n', type=int, default=None, metavar='N',
+                        help='number of training examples')
+
     parser.add_argument('--batch-size', type=int, default=128, metavar='N',
                         help='input batch size for training (default: 100)')
+
+    parser.add_argument('--img-dim', type=int, default=256, metavar='N',
+                        help='Size of the image')
 
     parser.add_argument('--test-batch-size', type=int, default=128, metavar='N',
                         help='input batch size for testing (default: 1000)')
 
     parser.add_argument('--epochs', type=int, default=100, metavar='N',
                         help='number of epochs to train (default: 14)')
+
+    parser.add_argument('--loss', type=str, default='dice', metavar='N', choices=['bce', 'dice'],
+                        help='loss function to use')
+
+    parser.add_argument('--model', type=str, default='unet', metavar='N', choices=['cnn', 'unet'],
+                        help='model architechture')
 
     parser.add_argument('--lr', type=float, default=3e-3, metavar='LR',
                         help='learning rate (default: 3e-3)')
@@ -32,16 +45,20 @@ def init_pipeline(arg_list=None):
     parser.add_argument('--checkpoint', type=str, default='',
                         help='for loading a checkpoint model')
 
+    parser.add_argument('--from-json', type=str, default='',
+                        help='for loading a checkpoint model')
+
     parser.add_argument('--visualize', action='store_true', default=True,
                         help='save visualization files')
-
-    parser.add_argument('--no-validate', action='store_false', default=True,
-                        help='dont validate')
 
     parser.add_argument('--plot', action='store_true', default=False,
                         help='plot training examples')
 
     args = parser.parse_args(arg_list)
+    if args.from_json != '':
+        with open(args.from_json, 'r') as f:
+            args = util.Args(json.load(f))
+
     checkpoint = util.load_checkpoint(args.checkpoint)
 
     return args, device, checkpoint

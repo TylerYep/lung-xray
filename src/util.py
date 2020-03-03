@@ -10,6 +10,12 @@ import torch.nn as nn
 SAVE_DIR = 'checkpoints'
 
 
+class Args:
+    def __init__(self, d):
+        self.__dict__ = d
+    def __repr__(self):
+        return "Args: {}".format(str(self.__dict__))
+
 def get_run_name(args: Namespace, save_dir: str = SAVE_DIR) -> str:
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)

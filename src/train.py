@@ -1,4 +1,6 @@
 import sys
+import os
+import json
 import random
 import numpy as np
 import torch
@@ -12,7 +14,11 @@ from src.args import init_pipeline
 from src.dataset import load_train_data
 from src.losses import DiceLoss
 from src.metric_tracker import MetricTracker, Mode
+<<<<<<< HEAD
 from src.models import BasicCNN as Model
+=======
+from src.models import MODEL_DICT
+>>>>>>> cad2f0516fa5d6ee10f41015f7786e37a8764b8d
 from src.verify import verify_model
 from src.viz import visualize, visualize_trained, plot_sbs
 
@@ -23,7 +29,9 @@ if 'google.colab' in sys.modules:
 else:
     from tqdm import tqdm
 
-
+LOSS_DICT = {"dice": DiceLoss,
+             "bce": nn.BCELoss
+            }
 
 def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
     if mode == Mode.TRAIN:
@@ -56,15 +64,18 @@ def init_metrics(args, checkpoint, train_len, val_len):
     run_name = checkpoint.get('run_name', util.get_run_name(args))
     metric_checkpoint = checkpoint.get('metric_obj', {})
     metrics = MetricTracker(run_name, train_len, val_len, args.log_interval, **metric_checkpoint)
+    with open(os.path.join(run_name, 'args.json'), 'w') as f: # Save used args to checkpoint folder
+        json.dump(args.__dict__, f,  indent=4)
     return run_name, metrics
 
 
 def load_model(args, device, checkpoint, init_params, train_loader):
-    criterion = DiceLoss()
-    model = Model(*init_params).to(device)
-    # for ind, param in enumerate(model.parameters()):
-    #     if ind < 66:
-    #         param.requires_grad = False
+    criterion = LOSS_DICT[args.loss]()
+    model = MODEL_DICT[args.model](*init_params).to(device)
+    if args.model == 'unet':
+        for ind, param in enumerate(model.parameters()):
+            if ind < 20:
+                param.requires_grad = False
     optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
     verify_model(model, train_loader, optimizer, criterion, device)
     util.load_state_dict(checkpoint, model, optimizer)
@@ -86,10 +97,7 @@ def train(arg_list=None):
         print(f'Epoch [{epoch}/{start_epoch + args.epochs - 1}]')
         metrics.next_epoch()
         tr_loss = train_and_validate(model, train_loader, optimizer, criterion, metrics, Mode.TRAIN)
-        val_loss = 0
-        if args.no_validate:
-            val_loss = train_and_validate(model, val_loader, optimizer, criterion, metrics, Mode.VAL)
-
+        val_loss = train_and_validate(model, val_loader, optimizer, criterion, metrics, Mode.VAL)
         is_best = metrics.update_best_metric(val_loss)
         util.save_checkpoint({
             'model_init': init_params,

@@ -22,34 +22,17 @@ def get_collate_fn(device):
     return lambda x: map(lambda b: b.to(device), default_collate(x))
 
 
-IMG_TRANSFORM = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.ToPILImage(),
-        transforms.Resize(INPUT_SHAPE[1:]),
-        transforms.ToTensor(),
-    ])
-
-
-MASK_TRANSFORM = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.ToPILImage(),
-        transforms.Resize(INPUT_SHAPE[1:], Image.NEAREST),
-        transforms.ToTensor(),
-    ])
-
-
 def load_train_data(args, device):
     collate_fn = get_collate_fn(device)
-    train_set = LungDataset('train', n=8)
-    val_set = LungDataset('val', n=8)
+    train_set = LungDataset('train', n=args.n, img_dim=args.img_dim)
+    val_set = LungDataset('val', n=args.n, img_dim=args.img_dim)
     train_loader = DataLoader(train_set,
                               batch_size=args.batch_size,
                               shuffle=True,
                               collate_fn=collate_fn)
     val_loader = DataLoader(val_set,
                             batch_size=args.batch_size,
-                            collate_fn=collate_fn
-                            )
+                            collate_fn=collate_fn)
     return train_loader, val_loader, len(train_set), len(val_set), {}
 
 
@@ -107,14 +90,34 @@ def row_to_data(id_, rle):
     return img[:, :, None].astype("float32"), mask
 
 
+
+
+def image_transform(img_dim):
+    return transforms.Compose([
+                transforms.ToTensor(),
+                transforms.ToPILImage(),
+                transforms.Resize((img_dim, img_dim)),
+                transforms.ToTensor(),
+            ])
+
+def mask_transform(mask_dim):
+    return transforms.Compose([
+                transforms.ToTensor(),
+                transforms.ToPILImage(),
+                transforms.Resize((mask_dim, mask_dim), Image.NEAREST),
+                transforms.ToTensor(),
+            ])
+
 class LungDataset(Dataset):
     ''' Dataset for training a model on a dataset. '''
-    def __init__(self, mode, n=None, lazy=True, mask_only=False, img_transform=IMG_TRANSFORM, mask_transform=MASK_TRANSFORM):
+    def __init__(self, mode, n=None, lazy=True, mask_only=False
+                , img_transform=image_transform, mask_transform=mask_transform
+                , img_dim=128):
         super().__init__()
         self.lazy = lazy
         self.mode = mode
-        self.img_transform = img_transform
-        self.mask_transform = mask_transform
+        self.img_transform = img_transform(img_dim)
+        self.mask_transform = mask_transform(img_dim)
         self.fname = f'{DATA_PATH}/{mode}.csv'
         assert bool(mask_transform) == bool(img_transform)
 
