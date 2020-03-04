@@ -12,9 +12,9 @@ from explore import plot_with_mask
 from src import util
 from src.args import init_pipeline
 from src.dataset import load_train_data
-from src.losses import DiceLoss, FocalLoss
+from src.losses import DiceLoss, FocalLoss, MixedLoss
 from src.metric_tracker import MetricTracker, Mode
-from src.models import MODEL_DICT
+from src.models import get_model_initializer
 from src.verify import verify_model
 from src.viz import visualize, visualize_trained, plot_sbs
 
@@ -25,10 +25,12 @@ if 'google.colab' in sys.modules:
 else:
     from tqdm import tqdm
 
-LOSS_DICT = {"dice": DiceLoss
-             , "bce": nn.BCELoss
-             , "focal": FocalLoss
-            }
+LOSS_DICT = {
+    "dice": DiceLoss,
+    "bce": nn.BCELoss,
+    "focal": FocalLoss,
+    "mixed": MixedLoss
+}
 
 def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
     if mode == Mode.TRAIN:
@@ -54,7 +56,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
 
             tqdm_dict = metrics.batch_update(i, data, loss, output, target, mode)
             pbar.set_postfix(tqdm_dict)
-            pbar.update() # There is some bug here when using notebooks
+            pbar.update()
 
     return metrics.get_epoch_results(mode)
 
@@ -70,14 +72,14 @@ def init_metrics(args, checkpoint, train_len, val_len):
 
 def load_model(args, device, checkpoint, init_params, train_loader):
     criterion = LOSS_DICT[args.loss]()
-    model = MODEL_DICT[args.model](*init_params).to(device)
+    model = get_model_initializer(args.model)(*init_params).to(device)
     if args.model == 'unet':
         for ind, param in enumerate(model.parameters()):
             if ind < 20:
                 param.requires_grad = False
     optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
-    # verify_model(model, train_loader, optimizer, criterion, device)
-    # util.load_state_dict(checkpoint, model, optimizer)
+    verify_model(model, train_loader, optimizer, criterion, device)
+    util.load_state_dict(checkpoint, model, optimizer)
     return model, criterion, optimizer
 
 
@@ -86,9 +88,9 @@ def train(arg_list=None):
     train_loader, val_loader, train_len, val_len, init_params = load_train_data(args, device)
     model, criterion, optimizer = load_model(args, device, checkpoint, init_params, train_loader)
     run_name, metrics = init_metrics(args, checkpoint, train_len, val_len)
-    # if args.visualize:
-    #     metrics.add_network(model, train_loader)
-    #     visualize(model, train_loader, run_name)
+    if args.visualize:
+        metrics.add_network(model, train_loader)
+        visualize(model, train_loader, run_name)
 
     util.set_rng_state(checkpoint)
     start_epoch = metrics.epoch + 1
