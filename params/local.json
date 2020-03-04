@@ -1,10 +1,10 @@
 {
     "img_dim": 64,
     "n": 16,
-    "loss": "dice",
+    "loss": "mixed",
     "model": "unet",
     "name": "",
-    "batch_size": 16,
+    "batch_size": 8,
     "checkpoint": "",
     "epochs": 500,
     "gamma": 0.7,

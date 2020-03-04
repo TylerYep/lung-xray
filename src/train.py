@@ -12,7 +12,7 @@ from explore import plot_with_mask
 from src import util
 from src.args import init_pipeline
 from src.dataset import load_train_data
-from src.losses import DiceLoss
+from src.losses import DiceLoss, FocalLoss, MixedLoss
 from src.metric_tracker import MetricTracker, Mode
 from src.models import MODEL_DICT
 from src.verify import verify_model
@@ -25,9 +25,12 @@ if 'google.colab' in sys.modules:
 else:
     from tqdm import tqdm
 
-LOSS_DICT = {"dice": DiceLoss,
-             "bce": nn.BCELoss
-            }
+LOSS_DICT = {
+    "dice": DiceLoss,
+    "bce": nn.BCELoss,
+    "focal": FocalLoss,
+    "mixed": MixedLoss
+}
 
 def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
     if mode == Mode.TRAIN:
@@ -53,7 +56,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
 
             tqdm_dict = metrics.batch_update(i, data, loss, output, target, mode)
             pbar.set_postfix(tqdm_dict)
-            pbar.update() # There is some bug here when using notebooks
+            pbar.update()
 
     return metrics.get_epoch_results(mode)
 
@@ -75,7 +78,7 @@ def load_model(args, device, checkpoint, init_params, train_loader):
             if ind < 20:
                 param.requires_grad = False
     optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
-    # verify_model(model, train_loader, optimizer, criterion, device)
+    verify_model(model, train_loader, optimizer, criterion, device)
     # util.load_state_dict(checkpoint, model, optimizer)
     return model, criterion, optimizer
 

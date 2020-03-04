@@ -7,7 +7,7 @@ class UNet(nn.Module):
     """ Neural network """
     def __init__(self):
         super().__init__()
-        self.unet = smp.Unet(encoder_name="mobilenet_v2",
+        self.unet = smp.Unet(encoder_name="resnet18",
                              encoder_weights='imagenet',
                              activation='sigmoid',
                              classes=1)

@@ -34,7 +34,7 @@ def init_pipeline(arg_list=None):
 
     parser.add_argument('--name', type=str, default='',
                         help='folder to save files to checkpoint/')
-                        
+
     parser.add_argument('--lr', type=float, default=3e-3, metavar='LR',
                         help='learning rate (default: 3e-3)')
 
@@ -57,7 +57,8 @@ def init_pipeline(arg_list=None):
                         help='plot training examples')
 
     args = parser.parse_args(arg_list)
-    if args.from_json != '': args = util.json_to_args(args.from_json)
+    if args.from_json != '':
+        args = util.json_to_args(args.from_json)
 
     checkpoint = util.load_checkpoint(args.checkpoint)
 
