@@ -6,6 +6,7 @@ import random
 import numpy as np
 import torch
 import torch.nn as nn
+import json
 
 SAVE_DIR = 'checkpoints'
 
@@ -16,6 +17,9 @@ class Args:
     def __repr__(self):
         return "Args: {}".format(str(self.__dict__))
 
+def json_to_args(fname):
+    with open(fname, 'r') as f:
+        return Args(json.load(f))
 
 def get_run_name(args: Namespace, save_dir: str = SAVE_DIR) -> str:
     if not os.path.isdir(save_dir):

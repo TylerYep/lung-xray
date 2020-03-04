@@ -21,6 +21,7 @@ torchsummary = "*"
 jupyter = "*"
 segmentation-models-pytorch = "*"
 tensorflow = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.7"

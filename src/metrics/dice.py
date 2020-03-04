@@ -20,7 +20,7 @@ class Dice(Metric):
         dice_output = output.reshape(batch_size, -1)
         intersection = torch.sum(dice_output * dice_target, dim=1)
         union = torch.sum(dice_output, dim=1) + torch.sum(dice_target, dim=1)
-        accuracy = ((2 * intersection + SMOOTH) / (union + intersection + SMOOTH)).sum().item()
+        accuracy = ((2 * intersection + SMOOTH) / (union + SMOOTH)).sum().item()
         self.epoch_acc += accuracy
         self.running_acc += accuracy
         return accuracy

@@ -3,7 +3,6 @@ import random
 import numpy as np
 import torch
 from src import util
-import json
 
 
 def init_pipeline(arg_list=None):
@@ -58,9 +57,7 @@ def init_pipeline(arg_list=None):
                         help='plot training examples')
 
     args = parser.parse_args(arg_list)
-    if args.from_json != '':
-        with open(args.from_json, 'r') as f:
-            args = util.Args(json.load(f))
+    if args.from_json != '': args = util.json_to_args(args.from_json)
 
     checkpoint = util.load_checkpoint(args.checkpoint)
 

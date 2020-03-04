@@ -1,0 +1,10 @@
+Experiments:
+
+Run the model with Dice Loss to compare with BCELoss
+    This should already be better than BCE
+
+Try efficientNet as the backbone. 
+
+Run a binary classifier
+Run a model with mask_only dataset
+Ensemble these models

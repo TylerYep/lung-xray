@@ -47,6 +47,8 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
             loss = criterion(output, target)
             if mode == Mode.TRAIN:
                 loss.backward()
+                # for ind, param in enumerate(model.parameters()):
+                #     print(param.grad)
                 optimizer.step()
 
             tqdm_dict = metrics.batch_update(i, data, loss, output, target, mode)

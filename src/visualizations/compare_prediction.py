@@ -7,7 +7,7 @@ def compare_prediction(model, data, target, run_name):
     print("Comparing predictions to actual")
     model.eval()
     pred = model(data).detach().numpy() > 0.3
-    NUM_EXAMPLES = 8
+    NUM_EXAMPLES = 16
     data, pred, target = data.squeeze(), pred.squeeze(), target.squeeze()
     _, axs = plt.subplots(NUM_EXAMPLES, 3, figsize=(10, 20))
     for i in range(NUM_EXAMPLES):
