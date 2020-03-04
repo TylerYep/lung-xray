@@ -12,7 +12,7 @@ from explore import plot_with_mask
 from src import util
 from src.args import init_pipeline
 from src.dataset import load_train_data
-from src.losses import DiceLoss
+from src.losses import DiceLoss, FocalLoss
 from src.metric_tracker import MetricTracker, Mode
 from src.models import MODEL_DICT
 from src.verify import verify_model
@@ -25,8 +25,9 @@ if 'google.colab' in sys.modules:
 else:
     from tqdm import tqdm
 
-LOSS_DICT = {"dice": DiceLoss,
-             "bce": nn.BCELoss
+LOSS_DICT = {"dice": DiceLoss
+             , "bce": nn.BCELoss
+             , "focal": FocalLoss
             }
 
 def train_and_validate(model, loader, optimizer, criterion, metrics, mode):

@@ -152,7 +152,10 @@ class LungDataset(Dataset):
 
             return img, mask
         else:
-            raise NotImplementedError
+            filename = self.data[index]
+            img = (pydicom.read_file(filename).pixel_array / 255)
+            img = self.img_transform(img)
+            return img[:,:,None].astype("float32")
 
 
 if __name__ == '__main__':

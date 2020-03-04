@@ -7,7 +7,8 @@ import torchsummary
 from src import util
 from src.args import init_pipeline
 from src.dataset import load_test_data, INPUT_SHAPE
-from src.models import BasicCNN as Model
+from src.models import UNet as Model
+from src.losses import DiceLoss
 
 if 'google.colab' in sys.modules:
     from tqdm import tqdm_notebook as tqdm
@@ -17,26 +18,22 @@ else:
 
 def test_model(test_loader, model, criterion):
     model.eval()
-    test_loss, correct = 0, 0
+    dice, correct = 0, 0
     with torch.no_grad():
         with tqdm(desc='Test', total=len(test_loader), ncols=120) as pbar:
             for data, target in test_loader:
-                output = model(data)
-                test_loss += criterion(output, target).item()
-                pred = output.argmax(dim=1, keepdim=True)
-                correct += pred.eq(target.view_as(pred)).sum().item()
+                output = (model(data) > 0.5).float()
+                dice += criterion(output, target).item()
                 pbar.update()
 
-    test_loss /= len(test_loader.dataset)
+    dice /= len(test_loader.dataset)
 
-    print(f'\nTest set: Average loss: {test_loss:.4f},',
-          f'Accuracy: {correct}/{len(test_loader.dataset)}',
-          f'({100. * correct / len(test_loader.dataset):.2f}%)\n')
+    print(f'\nTest set: Average Dice: {dice:.4f},',)
 
 
 def main():
     args, device, checkpoint = init_pipeline()
-    criterion = nn.BCELoss()
+    criterion = DiceLoss()
     test_loader = load_test_data(args, device)
     init_params = checkpoint.get('model_init', {})
     model = Model(*init_params).to(device)
