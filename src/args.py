@@ -33,6 +33,9 @@ def init_pipeline(arg_list=None):
     parser.add_argument('--model', type=str, default='unet', metavar='N', choices=['cnn', 'unet'],
                         help='model architechture')
 
+    parser.add_argument('--name', type=str, default='',
+                        help='folder to save files to checkpoint/')
+                        
     parser.add_argument('--lr', type=float, default=3e-3, metavar='LR',
                         help='learning rate (default: 3e-3)')
 

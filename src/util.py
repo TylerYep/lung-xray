@@ -16,12 +16,16 @@ class Args:
     def __repr__(self):
         return "Args: {}".format(str(self.__dict__))
 
+
 def get_run_name(args: Namespace, save_dir: str = SAVE_DIR) -> str:
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
 
     if args.checkpoint:
         return os.path.join(save_dir, args.checkpoint)
+
+    if args.name:
+        return os.path.join(save_dir, args.name)
 
     dirlist = [f for f in os.listdir(save_dir) if os.path.isdir(os.path.join(save_dir, f))]
     dirlist.sort()
