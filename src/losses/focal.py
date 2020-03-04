@@ -1,18 +1,16 @@
 import torch
 import torch.nn as nn
-
+import torch.nn.functional as F
 
 class FocalLoss(nn.Module):
-    def __init__(self):
+    def __init__(self, gamma=2):
         super().__init__()
+        self.gamma = gamma
 
     def forward(self, output, target):
-        return self.focal_loss(output, target)
-
-    @staticmethod
-    def focal_loss(output, target, eps=1):
-        batch_size = output.shape[0]
-        dice_target = target.reshape(batch_size, -1)
-        dice_output = output.reshape(batch_size, -1)
-       
-        return loss
+        max_val = (-output).clamp(min=0)
+        loss = output - output * target + max_val \
+             + ((-max_val).exp() + (-output - max_val).exp()).log()
+        invprobs = F.logsigmoid(-output * (target * 2.0 - 1.0))
+        loss = (invprobs * self.gamma).exp() * loss
+        return loss.mean()
