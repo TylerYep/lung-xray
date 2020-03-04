@@ -14,12 +14,15 @@ SAVE_DIR = 'checkpoints'
 class Args:
     def __init__(self, d):
         self.__dict__ = d
+
     def __repr__(self):
-        return "Args: {}".format(str(self.__dict__))
+        return f"Args: {self.__dict__}"
+
 
 def json_to_args(fname):
-    with open(fname, 'r') as f:
+    with open(fname) as f:
         return Args(json.load(f))
+
 
 def get_run_name(args: Namespace, save_dir: str = SAVE_DIR) -> str:
     if not os.path.isdir(save_dir):

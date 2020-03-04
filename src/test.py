@@ -34,6 +34,21 @@ def test_model(test_loader, model, criterion):
           f'({100. * correct / len(test_loader.dataset):.2f}%)\n')
 
 
+    # preds = torch.sigmoid(model(batch.to(device)))
+    # preds = preds.detach().cpu().numpy().squeeze()
+    # for probability in preds:
+    #     if probability.shape != (1024, 1024):
+    #         probability = cv2.resize(probability, dsize=(1024, 1024), interpolation=cv2.INTER_LINEAR)
+    #     predict, num_predict = post_process(probability, best_threshold, min_size)
+    #     if num_predict == 0:
+    #         encoded_pixels.append('-1')
+    #     else:
+    #         r = run_length_encode(predict)
+    #         encoded_pixels.append(r)
+    # df['EncodedPixels'] = encoded_pixels
+    # df.to_csv('submission.csv', columns=['ImageId', 'EncodedPixels'], index=False)
+
+
 def main():
     args, device, checkpoint = init_pipeline()
     criterion = nn.BCELoss()

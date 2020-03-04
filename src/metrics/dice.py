@@ -14,7 +14,7 @@ class Dice(Metric):
 
     def update(self, val_dict):
         output, target = val_dict['output'], val_dict['target']
-        output = output > 0.5
+        output = (output > 0.5).float()
         batch_size = output.shape[0]
         dice_target = target.reshape(batch_size, -1)
         dice_output = output.reshape(batch_size, -1)
