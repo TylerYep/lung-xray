@@ -1,11 +1,11 @@
 {
-    "img_dim": 256,
+    "img_dim": 128,
     "n": null,
     "loss": "mixed",
     "model": "UNet",
     "name":"",
     "batch_size": 128,
-    "checkpoint": "",
+    "checkpoint": "Z",
     "epochs": 100,
     "gamma": 0.7,
     "log_interval": 20,
