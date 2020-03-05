@@ -1,1 +1,2 @@
 P: Run on  64x64, overnight
+Z: Good model, 3e-4

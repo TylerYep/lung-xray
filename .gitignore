@@ -6,6 +6,7 @@
 data/*
 !data/.gitkeep
 checkpoints/
+!data/sample_submission.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
