@@ -1,6 +1,5 @@
 from .metric import Metric
 
-
 class Accuracy(Metric):
     def __init__(self):
         super().__init__()

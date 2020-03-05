@@ -24,8 +24,8 @@ def get_collate_fn(device):
 
 def load_train_data(args, device):
     collate_fn = get_collate_fn(device)
-    train_set = LungDataset('train', n=args.n, img_dim=args.img_dim, binary=args.binary)
-    val_set = LungDataset('val', n=args.n, img_dim=args.img_dim, binary=args.binary)
+    train_set = LungDataset('train', n=args.n, img_dim=args.img_dim, binary=args.binary, mask_only=args.mask_only)
+    val_set = LungDataset('val', n=args.n, img_dim=args.img_dim, binary=args.binary, mask_only=args.mask_only)
     train_loader = DataLoader(train_set,
                               batch_size=args.batch_size,
                               shuffle=True,

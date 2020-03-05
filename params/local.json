@@ -12,6 +12,7 @@
     "lr": 0.003,
     "plot": false,
     "test_batch_size": 128,
+    "mask_only": false,
     "visualize": true,
     "binary": false,
     "metric_names": ["Loss", "Dice", "IoU"]
