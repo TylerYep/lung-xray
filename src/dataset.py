@@ -36,10 +36,9 @@ def load_train_data(args, device):
     return train_loader, val_loader, len(train_set), len(val_set), {}
 
 
-def load_test_data(args, device):
-    collate_fn = get_collate_fn(device)
+def load_test_data(args):
     test_set = LungDataset('test')
-    test_loader = DataLoader(test_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
+    test_loader = DataLoader(test_set, batch_size=args.test_batch_size)
     return test_loader, len(test_set)
 
 
@@ -63,20 +62,30 @@ def rle2mask(rle, height=1024, width=1024, fill_value=1):
     return (component >= 1).astype(np.float32)
 
 
-# TODO haven't tested
-def mask2rle(component):
-    component = component.T.flatten()
-    start = np.where(component[1:] > component[:-1])[0]+1
-    end = np.where(component[:-1] > component[1:])[0]+1
-    length = end-start
+def mask2rle(img, width=1024, height=1024):
     rle = []
-    for i in range(len(length)):
-        if i == 0:
-            rle.extend([start[0], length[0]])
-        else:
-            rle.extend([start[i]-end[i-1], length[i]])
-    rle = ' '.join([str(r) for r in rle])
-    return rle
+    last_color = 0
+    current_pixel = 0
+    run_start, run_length = -1, 0
+
+    for x in range(width):
+        for y in range(height):
+            current_color = img[x][y]
+            if current_color != last_color:
+                if current_color == 1:
+                    run_start = current_pixel
+                    run_length = 1
+                else:
+                    rle.append(str(run_start))
+                    rle.append(str(run_length))
+                    run_start = -1
+                    run_length = 0
+                    current_pixel = 0
+            elif run_start > -1:
+                run_length += 1
+            last_color = current_color
+            current_pixel += 1
+    return " " + " ".join(rle)
 
 
 def row_to_data(id_, rle):
@@ -153,15 +162,17 @@ class LungDataset(Dataset):
             return img, mask
         else:
             filename = self.data[index]
-            img = (pydicom.read_file(filename).pixel_array / 255)
-            img = self.img_transform(img)
-            return img[:,:,None].astype("float32")
+            dicom_data = pydicom.read_file(filename)
+            image_id = dicom_data.SOPInstanceUID
+            img = dicom_data.pixel_array / 255
+            img = img[:, :, None].astype("float32")
+            if self.img_transform:
+                img = self.img_transform(img)
+            return img, image_id
 
 
 if __name__ == '__main__':
     train_set = LungDataset('train', mask_only=True)
-    train_loader = DataLoader(train_set,
-                              batch_size=4,
-                              shuffle=True)
+    train_loader = DataLoader(train_set, batch_size=4, shuffle=True)
     print(len(train_set))
     print(train_loader.batch_size * len(train_loader))
