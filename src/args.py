@@ -53,6 +53,9 @@ def init_pipeline(arg_list=None):
     parser.add_argument('--visualize', action='store_true', default=True,
                         help='save visualization files')
 
+    parser.add_argument('--binary', action='store_true', default=False,
+                        help='load binary labels')
+
     parser.add_argument('--plot', action='store_true', default=False,
                         help='plot training examples')
 

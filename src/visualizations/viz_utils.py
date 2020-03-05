@@ -23,7 +23,7 @@ def rearrange(orig_img):
     min_val = torch.min(img)
     if img.dtype == torch.float:
         img_data_max = 1
-    elif img.dtype == torch.int:
+    elif img.dtype == torch.int or img.dtype == torch.long:
         img_data_max = 255
     if min_val < 0 or max_val > img_data_max:
         img -= img.min()

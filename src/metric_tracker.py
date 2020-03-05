@@ -14,11 +14,10 @@ class Mode(Enum):
 
 
 # Adding metrics here will automatically search the metrics/ folder for an implementation.
-METRIC_NAMES = ['Loss', 'IoU', 'Dice']
-
 
 class MetricTracker:
     def __init__(self,
+                 metric_names,
                  run_name,
                  train_len,
                  val_len,
@@ -27,14 +26,13 @@ class MetricTracker:
                  num_batches=0,
                  metric_data=None,
                  best_metric=None):
-        assert METRIC_NAMES
         self.writer = SummaryWriter(run_name)
         self.epoch = epoch
         self.train_len = train_len
         self.val_len = val_len
         self.log_interval = log_interval
         self.num_batches = num_batches
-        self.metric_names = METRIC_NAMES
+        self.metric_names = metric_names
         self.primary_metric = self.metric_names[0]
         self.metric_data = metric_data if metric_data else \
                            {name: get_metric(name)() for name in self.metric_names}
@@ -92,12 +90,13 @@ class MetricTracker:
             if j > 5:
                 break
             out = output.detach()[j]
-            out = out > 0.3
+            out = (out > 0.5).float()
+            out = out[None, :, :]
             targ = target.detach()[j]
             self.writer.add_image(f'{j}/pred', out, num_steps)
             self.writer.add_image(f'{j}/target', targ, num_steps)
 
-    def batch_update(self, i, data, loss, output, target, mode):
+    def batch_update(self, i, data, loss, output, target, mode, binary):
         names = ('data', 'loss', 'output', 'target')
         variables = (data, loss, output, target)
         val_dict = dict(zip(names, variables))
@@ -108,7 +107,7 @@ class MetricTracker:
             if i > 0:
                 self.write_all(num_steps, mode)
             self.reset_all()
-        elif mode == Mode.VAL:
+        elif mode == Mode.VAL and not binary:
             if i == 0:
                 self.add_images(val_dict, num_steps)
         return {}

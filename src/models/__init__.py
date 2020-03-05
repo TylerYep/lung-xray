@@ -2,6 +2,7 @@ import sys
 from .rnn import BasicRNN
 from .cnn import BasicCNN
 from .unet import UNet
+from .binary import Binary
 # from .efficient_net import EfficientNet
 
 def get_model_initializer(model_name):

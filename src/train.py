@@ -32,7 +32,7 @@ LOSS_DICT = {
     "mixed": MixedLoss
 }
 
-def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
+def train_and_validate(model, loader, optimizer, criterion, metrics, mode, binary):
     if mode == Mode.TRAIN:
         model.train()
         torch.set_grad_enabled(True)
@@ -46,7 +46,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
             if mode == Mode.TRAIN:
                 optimizer.zero_grad()
 
-            output = model(data)
+            output = model(data).squeeze()
             loss = criterion(output, target)
             if mode == Mode.TRAIN:
                 loss.backward()
@@ -54,7 +54,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
                 #     print(param.grad)
                 optimizer.step()
 
-            tqdm_dict = metrics.batch_update(i, data, loss, output, target, mode)
+            tqdm_dict = metrics.batch_update(i, data, loss, output, target, mode, binary)
             pbar.set_postfix(tqdm_dict)
             pbar.update()
 
@@ -64,7 +64,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
 def init_metrics(args, checkpoint, train_len, val_len):
     run_name = checkpoint.get('run_name', util.get_run_name(args))
     metric_checkpoint = checkpoint.get('metric_obj', {})
-    metrics = MetricTracker(run_name, train_len, val_len, args.log_interval, **metric_checkpoint)
+    metrics = MetricTracker(args.metric_names, run_name, train_len, val_len, args.log_interval, **metric_checkpoint)
     with open(os.path.join(run_name, 'args.json'), 'w') as f: # Save used args to checkpoint folder
         json.dump(args.__dict__, f,  indent=4)
     return run_name, metrics
@@ -97,8 +97,8 @@ def train(arg_list=None):
     for epoch in range(start_epoch, start_epoch + args.epochs):
         print(f'Epoch [{epoch}/{start_epoch + args.epochs - 1}]')
         metrics.next_epoch()
-        tr_loss = train_and_validate(model, train_loader, optimizer, criterion, metrics, Mode.TRAIN)
-        val_loss = train_and_validate(model, val_loader, optimizer, criterion, metrics, Mode.VAL)
+        tr_loss = train_and_validate(model, train_loader, optimizer, criterion, metrics, Mode.TRAIN, args.binary)
+        val_loss = train_and_validate(model, val_loader, optimizer, criterion, metrics, Mode.VAL, args.binary)
         is_best = metrics.update_best_metric(val_loss)
         util.save_checkpoint({
             'model_init': init_params,
