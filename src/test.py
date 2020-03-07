@@ -1,4 +1,5 @@
 import sys
+from collections import defaultdict
 import cv2
 import pandas as pd
 import torch
@@ -21,34 +22,35 @@ else:
 def test_model(test_loader, model, criterion, device):
     model.eval()
     # dice, correct = 0, 0
-    image_ids = []
-    encoded_pixels = []
+    encoded_pixels = defaultdict(lambda: '-1')
     df = pd.read_csv('data/sample_submission.csv')
+    df = df.drop_duplicates('ImageId', keep='last').reset_index(drop=True)
     with torch.no_grad():
         with tqdm(desc='Test', total=len(test_loader), ncols=120) as pbar:
             for data, image_id in test_loader:
                 data = data.to(device)
-                image_ids.append(image_id)
                 output = model(data)
                 output = (output > 0.5).float()
                 output = output.detach().cpu().numpy().squeeze()
-                no_pneumothorax = output.sum() == 0
-                for pred in output:
-                    if pred.shape != (1024, 1024):
-                        pred = cv2.resize(pred, dsize=(1024, 1024), interpolation=cv2.INTER_LINEAR)
+                output = (output * 255).astype('uint8')
+
+                for img_id, pred in zip(image_id, output):
+                    no_pneumothorax = pred.sum() == 0
                     if no_pneumothorax:
-                        encoded_pixels.append('-1')
+                        encoded_pixels[img_id] = '-1'
                     else:
-                        encoded_pixels.append(mask2rle(pred))
+                        if pred.shape != (1024, 1024):
+                            pred = cv2.resize(pred, dsize=(1024, 1024), interpolation=cv2.INTER_LINEAR)
+                        encoded_pixels[img_id] = mask2rle(pred)
 
                 # dice += criterion(output, target).item()
                 pbar.update()
 
     # dice /= len(test_loader.dataset)
     # print(f'\nTest set: Average Dice: {dice:.4f},')
-    df['ImageId'] = image_ids
-    df['EncodedPixels'] = encoded_pixels
-    df.to_csv('submission.csv', columns=['ImageId', 'EncodedPixels'], index=False)
+    new_df = pd.DataFrame(encoded_pixels.items(), columns=['ImageId', 'EncodedPixels'])
+    print(new_df)
+    new_df.to_csv('submission.csv', columns=['ImageId', 'EncodedPixels'], index=False)
 
 
 def test():

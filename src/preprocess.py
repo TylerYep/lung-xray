@@ -44,7 +44,7 @@ def train_test_split(array_list, train_frac=0.8, val_frac=0.1, test_frac=0.1):
 def preprocess():
     data = pd.read_csv(f'{DATA_PATH}/train-rle.csv')
     data.columns = ['image_id', 'encoded_pixels']
-    new_data = pd.read_csv
+    # new_data = pd.read_csv
 
     for id_ in data['image_id']:
         filename = f'{DATA_PATH}/train_images/{id_}.dcm'
@@ -61,8 +61,8 @@ def preprocess():
     #     data['has_pneumothorax'] = pneumothorax
     #     data['rle_size'] = len(encoded_pixels_list)
 
-    data = pd.join(data, new_data)
-    print(new_data)
+    # data = pd.join(data, new_data)
+    # print(new_data)
 
     return data
 
