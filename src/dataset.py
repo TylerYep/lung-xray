@@ -24,22 +24,29 @@ def get_collate_fn(device):
 
 def load_train_data(args, device):
     collate_fn = get_collate_fn(device)
-    train_set = LungDataset('train', n=args.n, img_dim=args.img_dim, binary=args.binary, mask_only=args.mask_only)
-    val_set = LungDataset('val', n=args.n, img_dim=args.img_dim, binary=args.binary, mask_only=args.mask_only)
+    train_set = LungDataset('train',
+                            n=args.n,
+                            img_dim=args.img_dim,
+                            binary=args.binary,
+                            mask_only=args.mask_only)
+    val_set = LungDataset('val',
+                          n=args.n,
+                          img_dim=args.img_dim,
+                          binary=args.binary,
+                          mask_only=args.mask_only)
     train_loader = DataLoader(train_set,
                               batch_size=args.batch_size,
                               shuffle=True,
-                              collate_fn=collate_fn
-                              )
+                              collate_fn=collate_fn)
     val_loader = DataLoader(val_set,
                             batch_size=args.batch_size,
                             collate_fn=collate_fn)
-                            
+
     return train_loader, val_loader, len(train_set), len(val_set), {}
 
 
 def load_test_data(args):
-    test_set = LungDataset('test')
+    test_set = LungDataset('test', n =3)
     test_loader = DataLoader(test_set, batch_size=args.test_batch_size)
     return test_loader, len(test_set)
 
@@ -72,7 +79,7 @@ def mask2rle(img, width=1024, height=1024):
 
     for x in range(width):
         for y in range(height):
-            current_color = img[x][y]
+            current_color = img[y][x]
             if current_color != last_color:
                 if current_color == 1:
                     run_start = current_pixel
@@ -87,6 +94,9 @@ def mask2rle(img, width=1024, height=1024):
                 run_length += 1
             last_color = current_color
             current_pixel += 1
+        if last_color == 1:
+            rle.append(str(run_start))
+            rle.append(str(run_length))
     return " " + " ".join(rle)
 
 
@@ -182,8 +192,7 @@ if __name__ == '__main__':
     train_set = LungDataset('train', binary=True)
     train_loader = DataLoader(train_set,
                               batch_size=8,
-                              shuffle=True
-                            )
+                              shuffle=True)
     for x in train_loader:
         print(x)
         break
