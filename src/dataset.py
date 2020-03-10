@@ -46,7 +46,7 @@ def load_train_data(args, device):
 
 
 def load_test_data(args):
-    test_set = LungDataset('test', n =3)
+    test_set = LungDataset('test')
     test_loader = DataLoader(test_set, batch_size=args.test_batch_size)
     return test_loader, len(test_set)
 
@@ -97,7 +97,11 @@ def mask2rle(img, width=1024, height=1024):
         if last_color == 1:
             rle.append(str(run_start))
             rle.append(str(run_length))
-    return " " + " ".join(rle)
+
+    if len(rle) == 0:
+        return "-1"
+        
+    return " ".join(rle)
 
 
 def row_to_data(id_, rle, binary):

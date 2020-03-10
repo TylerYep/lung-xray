@@ -29,7 +29,7 @@ def init_pipeline(arg_list=None):
     parser.add_argument('--loss', type=str, default='dice', metavar='N', choices=['bce', 'dice'],
                         help='loss function to use')
 
-    parser.add_argument('--model', type=str, default='unet', metavar='N', choices=['cnn', 'unet'],
+    parser.add_argument('--model', type=str, default='UNet', metavar='N',
                         help='model architechture')
 
     parser.add_argument('--name', type=str, default='',
@@ -48,9 +48,12 @@ def init_pipeline(arg_list=None):
                         help='for loading a checkpoint model')
 
     parser.add_argument('--from-json', type=str, default='',
-                        help='for loading a checkpoint model')
+                        help='load json instead')
 
-    parser.add_argument('--visualize', action='store_true', default=True,
+    parser.add_argument('--mask-only', type=bool, default=False,
+                        help='only use mask examples')
+
+    parser.add_argument('--visualize', action='store_true', default=False,
                         help='save visualization files')
 
     parser.add_argument('--binary', action='store_true', default=False,

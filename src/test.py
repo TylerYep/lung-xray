@@ -10,7 +10,7 @@ import torchsummary
 from src import util
 from src.args import init_pipeline
 from src.dataset import load_test_data, INPUT_SHAPE, mask2rle
-from src.models import UNet as Model
+from src.models import get_model_initializer
 from src.losses import DiceLoss
 
 if 'google.colab' in sys.modules:
@@ -32,7 +32,6 @@ def test_model(test_loader, model, criterion, device):
                 output = model(data)
                 output = (output > 0.5).float()
                 output = output.detach().cpu().numpy().squeeze()
-                output = (output * 255).astype('uint8')
 
                 for img_id, pred in zip(image_id, output):
                     no_pneumothorax = pred.sum() == 0
@@ -58,8 +57,7 @@ def test():
     criterion = DiceLoss()
     test_loader, len_test = load_test_data(args)
     init_params = checkpoint.get('model_init', {})
-    model = Model(*init_params).to(device)
+    model = get_model_initializer(args.model)(*init_params).to(device)
     util.load_state_dict(checkpoint, model)
     torchsummary.summary(model, INPUT_SHAPE)
-
     test_model(test_loader, model, criterion, device)
