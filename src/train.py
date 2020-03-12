@@ -25,12 +25,14 @@ if 'google.colab' in sys.modules:
 else:
     from tqdm import tqdm
 
+
 LOSS_DICT = {
     "dice": DiceLoss,
     "bce": nn.BCELoss,
     "focal": FocalLoss,
     "mixed": MixedLoss
 }
+
 
 def train_and_validate(model, loader, optimizer, criterion, metrics, mode, binary):
     if mode == Mode.TRAIN:
@@ -50,8 +52,6 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode, binar
             loss = criterion(output, target)
             if mode == Mode.TRAIN:
                 loss.backward()
-                # for ind, param in enumerate(model.parameters()):
-                #     print(param.grad)
                 optimizer.step()
 
             tqdm_dict = metrics.batch_update(i, data, loss, output, target, mode, binary)
@@ -110,9 +110,6 @@ def train(arg_list=None):
             'run_name': run_name,
             'metric_obj': metrics.json_repr()
         }, run_name, is_best)
-
-    # if args.visualize:
-    #     visualize_trained(model, train_loader, run_name)
 
     return val_loss
 
