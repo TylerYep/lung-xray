@@ -2,6 +2,8 @@ import os
 import torch
 import torch.nn as nn
 
+from .unet import UNet
+from .binary import Binary
 
 class BinaryMaskOnly(nn.Module):
     """ Neural network """
@@ -9,8 +11,12 @@ class BinaryMaskOnly(nn.Module):
         super().__init__()
         binary_path = os.path.join('checkpoints', binary_checkpoint, 'model_best.pth.tar')
         mask_only_path = os.path.join('checkpoints', mask_checkpoint, 'model_best.pth.tar')
-        self.bin_model = torch.load(binary_path, map_location=torch.device('cpu'))
-        self.mask_only_model = torch.load(mask_only_path, map_location=torch.device('cpu'))
+        bin_model_weights = torch.load(binary_path)#, map_location=torch.device('cpu'))
+        mask_only_model_weights = torch.load(mask_only_path)#, map_location=torch.device('cpu'))
+        self.bin_model = Binary()
+        self.mask_only_model = UNet()
+        self.bin_model.load_state_dict(bin_model_weights['state_dict'])
+        self.mask_only_model.load_state_dict(mask_only_model_weights['state_dict'])
 
     def forward(self, x):
         """ Forward pass for your feedback prediction network. """
