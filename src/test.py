@@ -20,23 +20,6 @@ if 'google.colab' in sys.modules:
 else:
     from tqdm import tqdm
 
-def evaluate_model(model, loader, device, criterion=['dice']):
-    ## TODO this is function I haven't finished yet
-    model.eval()
-    # dice, correct = 0, 0
-    image_ids = []
-    encoded_pixels = []
-    totals = [0 for _ in range(len(criterion))]
-    n = 0
-    with torch.no_grad():
-        for data, target in loader:
-            data = data.to(device)
-            output = model(data)
-            for i, c in enumerate(criterion):
-                totals[i] += c(output, target)
-                n += 1
-    return [t/n for t in totals]
-
 
 def test_model(test_loader, model, criterion, device):
     model.eval()
@@ -58,7 +41,7 @@ def test_model(test_loader, model, criterion, device):
                     else:
                         if pred.shape != (1024, 1024):
                             pred = cv2.resize(pred, dsize=(1024, 1024), interpolation=cv2.INTER_LINEAR)
-                        plot_prediction(pred, 'TEST')
+                        # plot_prediction(pred, 'TEST')
                         encoded_pixels[img_id] = mask2rle(pred)
                 pbar.update()
 
