@@ -2,6 +2,14 @@ import matplotlib.pyplot as plt
 from .viz_utils import rearrange, save_figure
 
 
+def plot_prediction(data, run_name=''):
+    """arr should be a numpy array"""
+    data = data.cpu().squeeze()
+    plt.figure(figsize=(10,10))
+    plt.imshow(data)
+    save_figure(run_name, 'input_data.png')
+
+
 def view_input(data, target, run_name):
     ''' Data is of shape (B, C, H, W) '''
     NUM_EXAMPLES = 6

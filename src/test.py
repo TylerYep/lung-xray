@@ -13,6 +13,7 @@ from src.dataset import load_test_data, INPUT_SHAPE, mask2rle
 from src.models import get_model_initializer
 from src.losses import DiceLoss
 from src.metrics import dice
+from src.viz import plot_prediction
 
 if 'google.colab' in sys.modules:
     from tqdm import tqdm_notebook as tqdm
@@ -57,6 +58,7 @@ def test_model(test_loader, model, criterion, device):
                     else:
                         if pred.shape != (1024, 1024):
                             pred = cv2.resize(pred, dsize=(1024, 1024), interpolation=cv2.INTER_LINEAR)
+                        plot_prediction(pred, 'TEST')
                         encoded_pixels[img_id] = mask2rle(pred)
                 pbar.update()
 

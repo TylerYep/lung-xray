@@ -8,6 +8,7 @@ from src.models import UNet as Model
 
 from src.visualizations import *
 
+
 def plot_sbs(image, output, target):
     _, axs = plt.subplots(3)
     axs[0].imshow(image)
@@ -15,12 +16,14 @@ def plot_sbs(image, output, target):
     axs[2].imshow(target)
     plt.show()
 
+
 def plot_pixel_array(arr, figsize=(10, 10)):
     """arr should be a numpy array"""
     arr = arr.squeeze()
     plt.figure(figsize=figsize)
     plt.imshow(arr, cmap=plt.cm.bone)
     plt.show()
+
 
 def plot_with_mask(im, mask, figsize=(10, 10)):
     im = im.squeeze()
@@ -37,6 +40,7 @@ def _main(args, device, checkpoint):
     model = Model(*init_params).to(device)
     util.load_state_dict(checkpoint, model)
     visualize(model, train_loader)
+
 
 def main():
     args, device, checkpoint = init_pipeline()
