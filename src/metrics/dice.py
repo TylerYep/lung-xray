@@ -3,6 +3,16 @@ import torch
 
 SMOOTH = 1e-7
 
+def dice(output, target):
+    output = (output > 0.5).float()
+    batch_size = output.shape[0]
+    dice_target = target.reshape(batch_size, -1)
+    dice_output = output.reshape(batch_size, -1)
+    intersection = torch.sum(dice_output * dice_target, dim=1)
+    union = torch.sum(dice_output, dim=1) + torch.sum(dice_target, dim=1)
+    accuracy = ((2 * intersection + SMOOTH) / (union + SMOOTH)).sum().item()
+    return accuracy
+
 class Dice(Metric):
     def __init__(self):
         super().__init__()

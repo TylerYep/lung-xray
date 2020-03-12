@@ -12,11 +12,29 @@ from src.args import init_pipeline
 from src.dataset import load_test_data, INPUT_SHAPE, mask2rle
 from src.models import UNet as Model
 from src.losses import DiceLoss
+from src.metrics import dice
 
 if 'google.colab' in sys.modules:
     from tqdm import tqdm_notebook as tqdm
 else:
     from tqdm import tqdm
+
+def model_on_loader(model, loader, device, criterion=[dice]):
+    ## TODO this is function I haven't finished yet
+    model.eval()
+    # dice, correct = 0, 0
+    image_ids = []
+    encoded_pixels = []
+    totals = [0 for _ in range(len(criterion)]
+    n = 0
+    with torch.no_grad():
+        for data, target in loader:
+            data = data.to(device)
+            output = model(data)
+            for i, c in enumerate(criterion):
+                total[i] += c(output, target)
+                n += 1
+    return [t/n for t in totals]            
 
 
 def test_model(test_loader, model, criterion, device):
