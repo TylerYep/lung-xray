@@ -1,4 +1,4 @@
-from src import evaluate_model
+from src import evaluate
 
 if __name__ == '__main__':
-    evaluate_model()
+    evaluate()
