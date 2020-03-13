@@ -1,6 +1,6 @@
 {
     "img_dim": 128,
-    "n": 16,
+    "n": 32,
     "loss": "dice",
     "model": "UNet",
     "name": "",
