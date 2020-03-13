@@ -28,8 +28,8 @@ class IoU(Metric):
         self.num_examples += val_dict['batch_size']
         return accuracy
 
-    def get_batch_result(self, log_interval):
-        return self.running_acc / log_interval
+    def get_batch_result(self, log_interval, batch_size):
+        return self.running_acc / (log_interval * batch_size)
 
     def get_epoch_result(self):
         return self.epoch_acc / self.num_examples

@@ -101,8 +101,8 @@ class MetricTracker:
         tqdm_dict = self.update_all(val_dict)
         num_steps = (self.epoch - 1) * self.num_batches + i
         if mode == Mode.TRAIN and i % self.log_interval == 0:
-            if i > 0:
-                self.write_all(num_steps, mode)
+            # if i > 0:
+            #     self.write_all(num_steps, mode)
             self.reset_all()
         elif mode == Mode.VAL and not binary:
             if i == 0:

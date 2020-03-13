@@ -31,8 +31,8 @@ class Dice(Metric):
         self.num_examples += val_dict['batch_size']
         return dice_score
 
-    def get_batch_result(self, log_interval):
-        return self.running_acc / log_interval
+    def get_batch_result(self, log_interval, batch_size):
+        return self.running_acc / (log_interval * batch_size)
 
     def get_epoch_result(self):
         return self.epoch_acc / self.num_examples
