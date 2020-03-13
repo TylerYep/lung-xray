@@ -19,8 +19,6 @@ class MetricTracker:
     def __init__(self,
                  metric_names,
                  run_name,
-                 train_len,
-                 val_len,
                  log_interval,
                  epoch=0,
                  num_batches=0,
@@ -28,8 +26,6 @@ class MetricTracker:
                  best_metric=None):
         self.writer = SummaryWriter(run_name)
         self.epoch = epoch
-        self.train_len = train_len
-        self.val_len = val_len
         self.log_interval = log_interval
         self.num_batches = num_batches
         self.metric_names = metric_names
@@ -97,8 +93,9 @@ class MetricTracker:
             self.writer.add_image(f'{j}/target', targ, num_steps)
 
     def batch_update(self, i, data, loss, output, target, mode, binary):
-        names = ('data', 'loss', 'output', 'target')
-        variables = (data, loss, output, target)
+        batch_size = data.shape[0]
+        names = ('data', 'loss', 'output', 'target', 'batch_size')
+        variables = (data, loss, output, target, batch_size)
         val_dict = dict(zip(names, variables))
 
         tqdm_dict = self.update_all(val_dict)
@@ -115,12 +112,11 @@ class MetricTracker:
     def get_epoch_results(self, mode) -> float:
         result_str = ''
         for metric, metric_obj in self.metric_data.items():
-            num_examples = self.train_len if mode == Mode.TRAIN else self.val_len
-            epoch_result = metric_obj.get_epoch_result(num_examples)
+            epoch_result = metric_obj.get_epoch_result()
             result_str += f'{metric_obj.formatted(epoch_result)} '
             self.write(f'{mode}_Epoch_{metric}', epoch_result, self.epoch)
 
         print(f'{mode} {result_str}')
-        ret_val = self.metric_data[self.primary_metric].get_epoch_result(num_examples)
+        ret_val = self.metric_data[self.primary_metric].get_epoch_result()
         self.reset_hard()
         return ret_val

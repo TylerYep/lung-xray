@@ -53,7 +53,7 @@ def test_model(test_loader, model, criterion, device):
 def test():
     args, device, checkpoint = init_pipeline()
     criterion = DiceLoss()
-    test_loader, len_test = load_test_data(args)
+    test_loader = load_test_data(args)
     # init_params = checkpoint.get('model_init', {})
     init_params = ('AF', 'AG')
     model = get_model_initializer(args.model)(*init_params).to(device)

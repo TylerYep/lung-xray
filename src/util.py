@@ -8,20 +8,22 @@ import torch
 import torch.nn as nn
 import json
 
+
 SAVE_DIR = 'checkpoints'
+CONFIG_DIR = 'configs'
 
 
-class Args:
-    def __init__(self, d):
-        self.__dict__ = d
+class Arguments:
+    def __init__(self, args):
+        self.__dict__ = args
 
     def __repr__(self):
-        return f"Args: {self.__dict__}"
+        return str(self.__dict__)
 
 
-def json_to_args(fname):
-    with open(fname) as f:
-        return Args(json.load(f))
+def json_to_args(filename):
+    with open(os.path.join(CONFIG_DIR, filename + '.json')) as f:
+        return Arguments(json.load(f))
 
 
 def get_run_name(args: Namespace, save_dir: str = SAVE_DIR) -> str:

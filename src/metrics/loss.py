@@ -9,6 +9,7 @@ class Loss(Metric):
         self.init_val = np.inf
         self.epoch_loss = 0.0
         self.running_loss = 0.0
+        self.num_examples = 0
 
     def reset(self):
         self.running_loss = 0.0
@@ -17,10 +18,11 @@ class Loss(Metric):
         loss = val_dict['loss'].item()
         self.epoch_loss += loss
         self.running_loss += loss
+        self.num_examples += val_dict['batch_size']
         return loss
 
-    def get_batch_result(self, log_interval):
-        return self.running_loss / log_interval
+    def get_batch_result(self, log_interval, batch_size):
+        return self.running_loss / (log_interval * batch_size)
 
-    def get_epoch_result(self, num_examples):
-        return self.epoch_loss / num_examples
+    def get_epoch_result(self):
+        return self.epoch_loss / self.num_examples

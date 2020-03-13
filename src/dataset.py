@@ -42,13 +42,13 @@ def load_train_data(args, device):
                             batch_size=args.batch_size,
                             collate_fn=collate_fn)
 
-    return train_loader, val_loader, len(train_set), len(val_set), {}
+    return train_loader, val_loader, {}
 
 
 def load_test_data(args):
     test_set = LungDataset('test')
     test_loader = DataLoader(test_set, batch_size=args.test_batch_size)
-    return test_loader, len(test_set)
+    return test_loader
 
 
 # This function works
@@ -100,7 +100,7 @@ def mask2rle(img, width=1024, height=1024):
 
     if len(rle) == 0:
         return "-1"
-        
+
     return " ".join(rle)
 
 

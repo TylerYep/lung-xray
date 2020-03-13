@@ -61,10 +61,10 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode, binar
     return metrics.get_epoch_results(mode)
 
 
-def init_metrics(args, checkpoint, train_len, val_len):
+def init_metrics(args, checkpoint):
     run_name = checkpoint.get('run_name', util.get_run_name(args))
     metric_checkpoint = checkpoint.get('metric_obj', {})
-    metrics = MetricTracker(["Loss", "Dice", "IoU"], run_name, train_len, val_len, args.log_interval, **metric_checkpoint)
+    metrics = MetricTracker(["Loss", "Dice", "IoU"], run_name, args.log_interval, **metric_checkpoint)
     with open(os.path.join(run_name, 'args.json'), 'w') as f: # Save used args to checkpoint folder
         json.dump(args.__dict__, f,  indent=4)
     return run_name, metrics
@@ -85,12 +85,12 @@ def load_model(args, device, checkpoint, init_params, train_loader):
 
 def train(arg_list=None):
     args, device, checkpoint = init_pipeline(arg_list)
-    train_loader, val_loader, train_len, val_len, init_params = load_train_data(args, device)
+    train_loader, val_loader, init_params = load_train_data(args, device)
     model, criterion, optimizer = load_model(args, device, checkpoint, init_params, train_loader)
-    run_name, metrics = init_metrics(args, checkpoint, train_len, val_len)
+    run_name, metrics = init_metrics(args, checkpoint)
     if args.visualize:
         metrics.add_network(model, train_loader)
-        visualize(model, train_loader, run_name)
+        # visualize(model, train_loader, run_name)
 
     util.set_rng_state(checkpoint)
     start_epoch = metrics.epoch + 1
