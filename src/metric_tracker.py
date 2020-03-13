@@ -75,9 +75,9 @@ class MetricTracker:
             ret_dict[metric] = metric_obj.update(val_dict)
         return ret_dict
 
-    def write_all(self, num_steps, mode):
+    def write_all(self, batch_size, num_steps, mode):
         for metric, metric_obj in self.metric_data.items():
-            batch_result = metric_obj.get_batch_result(self.log_interval)
+            batch_result = metric_obj.get_batch_result(self.log_interval, batch_size)
             self.write(f'{mode}_Batch_{metric}', batch_result, num_steps)
 
     def add_images(self, val_dict, num_steps):
@@ -101,8 +101,8 @@ class MetricTracker:
         tqdm_dict = self.update_all(val_dict)
         num_steps = (self.epoch - 1) * self.num_batches + i
         if mode == Mode.TRAIN and i % self.log_interval == 0:
-            # if i > 0:
-            #     self.write_all(num_steps, mode)
+            if i > 0:
+                self.write_all(batch_size, num_steps, mode)
             self.reset_all()
         elif mode == Mode.VAL and not binary:
             if i == 0:
