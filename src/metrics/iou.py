@@ -10,7 +10,7 @@ class IoU(Metric):
 
     @staticmethod
     def calculate_iou(output, target, eps=1e-7):
-        output = output > 0.5
+        output = output > 0.3
         output, target = output.squeeze(), target.squeeze()
         intersection = (output & (target).bool()).float().sum((1, 2)) + eps
         union = (output | target.bool()).float().sum((1, 2)) + eps
