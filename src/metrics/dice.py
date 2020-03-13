@@ -11,7 +11,7 @@ class Dice(Metric):
 
     @staticmethod
     def calculate_dice_coefficent(output, target, eps=1e-7):
-        output = output > 0.3
+        output = (output > 0.3).float()
         batch_size = output.shape[0]
         dice_target = target.reshape(batch_size, -1)
         dice_output = output.reshape(batch_size, -1)
