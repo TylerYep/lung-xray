@@ -4,6 +4,7 @@ from .cnn import BasicCNN
 from .unet import UNet
 from .binary import Binary
 from .binary_mask_only import BinaryMaskOnly
+from .binary_unet import UNetWithBinary
 # from .efficient_net import EfficientNet
 
 def get_model_initializer(model_name):

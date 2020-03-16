@@ -14,6 +14,6 @@ class MixedLoss(nn.Module):
 
     def forward(self, output, target):
         loss = self.dice(output, target) \
-            + self.bce(output, target)
+            + self.bce(output, target.squeeze())
             # + self.alpha * self.focal(output, target)
         return loss.mean()
