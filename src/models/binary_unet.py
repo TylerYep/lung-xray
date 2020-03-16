@@ -28,7 +28,7 @@ class UNetWithBinary(nn.Module):
         self.outc = OutConv(64, n_classes)
 
         self.pool = nn.MaxPool2d(2)
-        self.fc = nn.Linear(32768, 1)
+        self.fc = nn.Linear(2048, 1)
 
     def forward(self, x):
         batch_size = x.shape[0]
@@ -44,12 +44,13 @@ class UNetWithBinary(nn.Module):
         binary = self.fc(binary)
         result = torch.sigmoid(binary)
         indices = torch.nonzero(result < 0.4)
-
+        
         x = self.up1(x5, x4)
         x = self.up2(x, x3)
         x = self.up3(x, x2)
         x = self.up4(x, x1)
         logits = self.outc(x)
         out = torch.sigmoid(logits)
-        out[indices] = 0
-        return out
+        z = out.clone()
+        z[indices] = 0.
+        return z

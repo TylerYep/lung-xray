@@ -48,7 +48,7 @@ def check_all_layers_training(model, loader, optimizer, criterion):
         assert (start != end).any()
 
 
-def overfit_example(model, loader, optimizer, criterion, device, batch_size=5, max_iters=5):
+def overfit_example(model, loader, optimizer, criterion, device, batch_size=2, max_iters=5):
     """
     Verifies that the provided model can overfit a single batch or example.
     """
