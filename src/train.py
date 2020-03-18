@@ -12,7 +12,7 @@ from explore import plot_with_mask
 from src import util
 from src.args import init_pipeline
 from src.dataset import load_train_data
-from src.losses import DiceLoss, FocalLoss, MixedLoss
+from src.losses import DiceLoss, FocalLoss, MixedLoss, NewMixedLoss
 from src.metric_tracker import MetricTracker, Mode
 from src.models import get_model_initializer
 from src.verify import verify_model
@@ -30,7 +30,7 @@ LOSS_DICT = {
     "dice": DiceLoss,
     "bce": nn.BCELoss,
     "focal": FocalLoss,
-    "mixed": MixedLoss
+    "mixed": MixedLoss,
     "new_mixed": NewMixedLoss
 }
 
@@ -49,8 +49,9 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode, binar
             if mode == Mode.TRAIN:
                 optimizer.zero_grad()
 
-            output = model(data).squeeze()
-            loss = criterion(output, target)
+            output, result = model(data)
+            output = output.squeeze()
+            loss = criterion((output, result), target)
             if mode == Mode.TRAIN:
                 loss.backward()
                 optimizer.step()

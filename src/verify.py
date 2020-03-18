@@ -85,7 +85,7 @@ def check_batch_dimension(model, loader, optimizer, test_val=1):
     optimizer.zero_grad()
     data.requires_grad_()
 
-    output = model(data)
+    output, result = model(data)
     loss = output[test_val].sum()
     loss.backward()
 
