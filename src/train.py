@@ -31,6 +31,7 @@ LOSS_DICT = {
     "bce": nn.BCELoss,
     "focal": FocalLoss,
     "mixed": MixedLoss
+    "new_mixed": NewMixedLoss
 }
 
 
@@ -73,7 +74,7 @@ def init_metrics(args, checkpoint):
 def load_model(args, device, checkpoint, init_params, train_loader):
     criterion = LOSS_DICT[args.loss]()
     model = get_model_initializer(args.model)(*init_params).to(device)
-    if args.model == 'unet':
+    if args.model == 'UNet':
         for ind, param in enumerate(model.parameters()):
             if ind < 20:
                 param.requires_grad = False

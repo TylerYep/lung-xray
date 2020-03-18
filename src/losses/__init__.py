@@ -7,6 +7,7 @@ import torch.nn.functional as F
 from .dice import DiceLoss
 from .focal import FocalLoss
 from .mixed import MixedLoss
+from .new_mixed import NewMixedLoss
 
 
 def get_loss_initializer(loss_fn):

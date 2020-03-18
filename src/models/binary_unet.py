@@ -10,7 +10,7 @@ from .unet_parts import *
 
 
 class UNetWithBinary(nn.Module):
-    def __init__(self, n_channels=3, n_classes=1, bilinear=True):
+    def __init__(self, img_size, n_channels=1, n_classes=1, bilinear=True):
         super().__init__()
         self.n_channels = n_channels
         self.n_classes = n_classes
@@ -28,11 +28,11 @@ class UNetWithBinary(nn.Module):
         self.outc = OutConv(64, n_classes)
 
         self.pool = nn.MaxPool2d(2)
-        self.fc = nn.Linear(2048, 1)
+        self.fc = nn.Linear(img_size**2 // 2, 1)
 
     def forward(self, x):
         batch_size = x.shape[0]
-        x = torch.cat([x] * 3, dim=1)
+        # x = torch.cat([x] * 3, dim=1)
         x1 = self.inc(x)
         x2 = self.down1(x1)
         x3 = self.down2(x2)
@@ -43,14 +43,12 @@ class UNetWithBinary(nn.Module):
         binary = binary.reshape((batch_size, -1))
         binary = self.fc(binary)
         result = torch.sigmoid(binary)
-        indices = torch.nonzero(result < 0.4)
-        
+        # indices = torch.nonzero(result < 0.4)
+
         x = self.up1(x5, x4)
         x = self.up2(x, x3)
         x = self.up3(x, x2)
         x = self.up4(x, x1)
         logits = self.outc(x)
         out = torch.sigmoid(logits)
-        z = out.clone()
-        z[indices] = 0.
-        return z
+        return out, result

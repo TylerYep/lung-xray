@@ -7,3 +7,9 @@ binary -> unet -> val dice -> submit
 2nd to last - last weights
 
 or new architecture
+
+
+AO is efficientnet-b0 Unet with good learning rate
+AQ is mask only
+AU is Unet with binary classifier in the middle
+AV is efficientnet-b1 unet

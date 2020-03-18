@@ -14,7 +14,7 @@ if 'google.colab' in sys.modules:
 else:
     DATA_PATH = 'data'
 
-INPUT_SHAPE = (1, 256, 256)
+INPUT_SHAPE = (1, 64, 64)
 CLASS_LABELS = []
 
 
@@ -42,7 +42,8 @@ def load_train_data(args, device):
                             batch_size=args.batch_size,
                             collate_fn=collate_fn)
 
-    return train_loader, val_loader, {}
+    params = [args.img_dim] if args.model == 'UNetWithBinary' else []
+    return train_loader, val_loader, params
 
 
 def load_test_data(args):
@@ -138,9 +139,15 @@ def mask_transform(mask_dim):
 
 class LungDataset(Dataset):
     ''' Dataset for training a model on a dataset. '''
-    def __init__(self, mode, n=None, lazy=True, mask_only=False
-                , img_transform=image_transform, mask_transform=mask_transform, binary=False
-                , img_dim=128):
+    def __init__(self,
+                 mode,
+                 n=None,
+                 lazy=True,
+                 mask_only=False,
+                 img_transform=image_transform,
+                 mask_transform=mask_transform,
+                 binary=False,
+                 img_dim=256):
         super().__init__()
         self.lazy = lazy
         self.mode = mode
@@ -200,3 +207,4 @@ if __name__ == '__main__':
     for x in train_loader:
         print(x)
         break
+    

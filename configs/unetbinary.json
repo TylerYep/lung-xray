@@ -1,7 +1,7 @@
 {
     "img_dim": 256,
     "n": null,
-    "loss": "mixed",
+    "loss": "new_mixed",
     "model": "UNetWithBinary",
     "name":"",
     "batch_size": 48,
