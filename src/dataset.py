@@ -14,7 +14,7 @@ if 'google.colab' in sys.modules:
 else:
     DATA_PATH = 'data'
 
-INPUT_SHAPE = (1, 64, 64)
+INPUT_SHAPE = (1, 256, 256)
 CLASS_LABELS = []
 
 
@@ -207,4 +207,3 @@ if __name__ == '__main__':
     for x in train_loader:
         print(x)
         break
-    

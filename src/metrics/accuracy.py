@@ -10,7 +10,7 @@ class Accuracy(Metric):
 
     @staticmethod
     def calculate_accuracy(output, target):
-        return (output.argmax(1) == target).float().sum().item()
+        return (output == target).float().sum().item() # .argmax(1)
 
     def formatted(self, computed_val):
         return f'{self.name}: {100. * computed_val:.2f}%'

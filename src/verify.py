@@ -16,7 +16,7 @@ def verify_model(model, loader, optimizer, criterion, device):
     You may need to change the batch_size or max_iters in overfit_example
     in order to overfit the batch.
     """
-    torchsummary.summary(model, INPUT_SHAPE)
+    torchsummary.summary(model, INPUT_SHAPE, max_depth=5)
     check_batch_dimension(model, loader, optimizer)
     # overfit_example(model, loader, optimizer, criterion, device)
     # check_all_layers_training(model, loader, optimizer, criterion)
@@ -85,7 +85,7 @@ def check_batch_dimension(model, loader, optimizer, test_val=1):
     optimizer.zero_grad()
     data.requires_grad_()
 
-    output, result = model(data)
+    output = model(data)
     loss = output[test_val].sum()
     loss.backward()
 

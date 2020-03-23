@@ -49,9 +49,9 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode, binar
             if mode == Mode.TRAIN:
                 optimizer.zero_grad()
 
-            output, result = model(data)
+            output = model(data)
             output = output.squeeze()
-            loss = criterion((output, result), target)
+            loss = criterion(output, target)
             if mode == Mode.TRAIN:
                 loss.backward()
                 optimizer.step()
@@ -66,7 +66,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode, binar
 def init_metrics(args, checkpoint):
     run_name = checkpoint.get('run_name', util.get_run_name(args))
     metric_checkpoint = checkpoint.get('metric_obj', {})
-    metrics = MetricTracker(["Loss", "Dice", "IoU"], run_name, args.log_interval, **metric_checkpoint)
+    metrics = MetricTracker(args.metric_names, run_name, args.log_interval, **metric_checkpoint)
     with open(os.path.join(run_name, 'args.json'), 'w') as f: # Save used args to checkpoint folder
         json.dump(args.__dict__, f,  indent=4)
     return run_name, metrics
